@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="FreeRTOSWin32.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\croutine.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\event_groups.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\list.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\portable\MSVC-MingW\port.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\queue.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\stream_buffer.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\tasks.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\timers.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\portable\Common\mpu_wrappers.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\portable\Common\mpu_wrappers_v2.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\LibRTOSConsole\src\Console.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\LibL6474\src\LibL6474x.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\LibHALMockup\src\stm32f7xx_hal.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\LibSpindle\src\Spindle.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\queue.h">
+      <Filter>Quelldateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\croutine.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\atomic.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\deprecated_definitions.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\event_groups.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\FreeRTOS.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\list.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\message_buffer.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\mpu_prototypes.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\mpu_syscall_numbers.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\mpu_wrappers.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\portable.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\portable\MSVC-MingW\portmacro.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\projdefs.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\semphr.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\StackMacros.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\stack_macros.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\stream_buffer.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\task.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\timers.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FreeRTOSConfig.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\LibRTOSConsole\conf\ConsoleConfig.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\LibRTOSConsole\inc\Console.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\LibL6474\inc\LibL6474.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\stepper\Core\Inc\Stepper\Controller.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\stepper\Core\Inc\Stepper\LibL6474Config.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\LibHALMockup\inc\stm32f7xx_hal.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="include\main.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\queue.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\LibSpindle\inc\Spindle.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{e358f0e1-40e8-41b3-9157-955cd7f886fe}</ProjectGuid>
+    <RootNamespace>FreeRTOSWin32</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\..\libs\LibSpindle\inc;..\..\libs\LibHALMockup\inc;..\..\libs\LibL6474\inc;..\..\stepper\Core\Inc\Stepper;..\..\libs\LibRTOSConsole\inc;..\..\libs\LibRTOSConsole\conf;include;..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\portable\MSVC-MingW;..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\portable;..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel;..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\croutine.c" />
+    <ClCompile Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\event_groups.c" />
+    <ClCompile Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\list.c" />
+    <ClCompile Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\portable\Common\mpu_wrappers.c" />
+    <ClCompile Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\portable\Common\mpu_wrappers_v2.c" />
+    <ClCompile Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\portable\MSVC-MingW\port.c" />
+    <ClCompile Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\queue.c" />
+    <ClCompile Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\stream_buffer.c" />
+    <ClCompile Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\tasks.c" />
+    <ClCompile Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\timers.c" />
+    <ClCompile Include="..\..\libs\LibHALMockup\src\stm32f7xx_hal.c" />
+    <ClCompile Include="..\..\libs\LibL6474\src\LibL6474x.c" />
+    <ClCompile Include="..\..\libs\LibRTOSConsole\src\Console.c" />
+    <ClCompile Include="..\..\libs\LibSpindle\src\Spindle.c" />
+    <ClCompile Include="FreeRTOSWin32.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\atomic.h" />
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\croutine.h" />
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\deprecated_definitions.h" />
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\event_groups.h" />
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\FreeRTOS.h" />
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\list.h" />
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\message_buffer.h" />
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\mpu_prototypes.h" />
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\mpu_syscall_numbers.h" />
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\mpu_wrappers.h" />
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\portable.h" />
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\projdefs.h" />
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\queue.h" />
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\semphr.h" />
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\StackMacros.h" />
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\stack_macros.h" />
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\stream_buffer.h" />
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\task.h" />
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\include\timers.h" />
+    <ClInclude Include="..\..\libs\FreeRTOS-LTS\FreeRTOS\FreeRTOS-Kernel\portable\MSVC-MingW\portmacro.h" />
+    <ClInclude Include="..\..\libs\LibHALMockup\inc\stm32f7xx_hal.h" />
+    <ClInclude Include="..\..\libs\LibL6474\inc\LibL6474.h" />
+    <ClInclude Include="..\..\libs\LibRTOSConsole\conf\ConsoleConfig.h" />
+    <ClInclude Include="..\..\libs\LibRTOSConsole\inc\Console.h" />
+    <ClInclude Include="..\..\libs\LibSpindle\inc\Spindle.h" />
+    <ClInclude Include="..\..\stepper\Core\Inc\Stepper\Controller.h" />
+    <ClInclude Include="..\..\stepper\Core\Inc\Stepper\LibL6474Config.h" />
+    <ClInclude Include="include\FreeRTOSConfig.h" />
+    <ClInclude Include="include\main.h" />
+    <ClInclude Include="include\sys\queue.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
