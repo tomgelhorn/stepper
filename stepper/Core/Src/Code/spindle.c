@@ -15,12 +15,16 @@ typedef struct {
 } SpindleContext;
 
 void SPINDLE_SetDirection(SpindleHandle_t h, void* context, int direction) {
+	(void) h;
+
 	SpindleContext* ctx = (SpindleContext*) context;
 
 	ctx->direction = direction;
 }
 
 void SPINDLE_SetDutyCycle(SpindleHandle_t h, void* context, float duty) {
+	(void) h;
+
 	SpindleContext* ctx = (SpindleContext*) context;
 
 	int arr = TIM2->ARR;
@@ -36,6 +40,8 @@ void SPINDLE_SetDutyCycle(SpindleHandle_t h, void* context, float duty) {
 }
 
 void SPINDLE_EnaPWM(SpindleHandle_t h, void* context, int enable) {
+	(void) h;
+
 	SpindleContext* ctx = (SpindleContext*) context;
 
 	HAL_GPIO_WritePin(SPINDLE_ENA_L_GPIO_Port, SPINDLE_ENA_L_Pin, enable);
@@ -67,5 +73,5 @@ void init_spindle(ConsoleHandle_t console_handle, TIM_HandleTypeDef tim_handle) 
 	spindle_params.enaPWM             = SPINDLE_EnaPWM;
 	spindle_params.context            = &ctx;
 
-	SpindleHandle_t spindle_handle = SPINDLE_CreateInstance( 4*configMINIMAL_STACK_SIZE, configMAX_PRIORITIES - 3, console_handle, &spindle_params);
+	SPINDLE_CreateInstance( 4*configMINIMAL_STACK_SIZE, configMAX_PRIORITIES - 3, console_handle, &spindle_params);
 }

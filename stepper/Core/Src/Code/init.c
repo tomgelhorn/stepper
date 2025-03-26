@@ -12,6 +12,7 @@
 #include "Console.h"
 
 #include "main.h"
+#include "init.h"
 
 static int CapabilityFunc( int argc, char** argv, void* ctx )
 {
@@ -19,8 +20,8 @@ static int CapabilityFunc( int argc, char** argv, void* ctx )
 	(void)argv;
 	(void)ctx;
 	printf("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\r\nOK",
-	    0, // has spindle
-		0, // has spindle status
+	    1, // has spindle
+		1, // has spindle status
 		0, // has stepper
 		0, // has stepper move relative
 		0, // has stepper move speed
