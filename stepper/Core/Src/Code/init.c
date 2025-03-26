@@ -8,7 +8,10 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "stdio.h"
+
 #include "Console.h"
+
+#include "main.h"
 
 static int CapabilityFunc( int argc, char** argv, void* ctx )
 {
@@ -47,9 +50,14 @@ static int CapabilityFunc( int argc, char** argv, void* ctx )
 	return 0;
 }
 
-void init() {
+
+
+
+void init(TIM_HandleTypeDef tim_handle) {
 	  // set up console
 	  ConsoleHandle_t console_handle = CONSOLE_CreateInstance( 4*configMINIMAL_STACK_SIZE, configMAX_PRIORITIES - 5  );
 
 	  CONSOLE_RegisterCommand(console_handle, "capability", "prints a specified string of capability bits", CapabilityFunc, NULL);
+
+	  init_spindle(console_handle, tim_handle);
 }
