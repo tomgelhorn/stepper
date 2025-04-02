@@ -115,10 +115,24 @@
 
 #ifdef INC_FREERTOS_H
 // ----------------------------------------------------------------------------
+// The following functions are used to lock IRQs to make sure the newlib functions
+// can be used in an IRQ as well, this is not working as expected and so we disable it
+// for our platform so far, therefore we have to make sure the user can not enter newlib
+// functions when running in ISR context
 //! Disables interrupts (after saving prior state)
-#  define DRN_ENTER_CRITICAL_SECTION(_usis) { _usis = taskENTER_CRITICAL_FROM_ISR(); }
+#  define NEWLIB_FUNCS_INSIDE_ISR 0
+#  if defined(NEWLIB_FUNCS_INSIDE_ISR) && NEWLIB_FUNCS_INSIDE_ISR != 0
+define DRN_ENTER_CRITICAL_SECTION(_usis) { _usis = taskENTER_CRITICAL_FROM_ISR(); }
+#  else
+#    define DRN_ENTER_CRITICAL_SECTION(_usis) do { int insideAnISR = xPortIsInsideInterrupt(); configASSERT( !insideAnISR ); } while(0)
+#  endif
+
 //! Re-enables interrupts (unless already disabled prior taskENTER_CRITICAL)
-#  define DRN_EXIT_CRITICAL_SECTION(_usis)  { taskEXIT_CRITICAL_FROM_ISR(_usis);     }
+#  if defined(NEWLIB_FUNCS_INSIDE_ISR) && NEWLIB_FUNCS_INSIDE_ISR != 0
+#    define DRN_EXIT_CRITICAL_SECTION(_usis)  { taskEXIT_CRITICAL_FROM_ISR(_usis);     }
+#  else
+#    define DRN_EXIT_CRITICAL_SECTION(_usis)
+#  endif
 
 // ----------------------------------------------------------------------------
 #  define __HeapBase  _end
@@ -659,14 +673,16 @@ static unsigned int stickyHeapBytesRemaining;
 uint32_t TotalHeapSize;
 
 // ----------------------------------------------------------------------------
+static UBaseType_t malLock_uxSavedInterruptStatus;
+
+// ----------------------------------------------------------------------------
 void* _sbrk_r( struct _reent* pReent, int incr )
 // ----------------------------------------------------------------------------
 {
+	( void )malLock_uxSavedInterruptStatus;
     ( void )pReent;
     ( void )incr;
     register char* stack_ptr asm( "sp" );
-
-    UBaseType_t usis; // saved interrupt status
 
     // make sure to calculate the correct heap size and bytes remaining at the first call!
     if( TotalHeapSize == 0 )
@@ -686,14 +702,14 @@ void* _sbrk_r( struct _reent* pReent, int incr )
                   - ( configISR_STACK_SIZE_WORDS * 4 )
 #endif
                   ; // Once running, OK to reuse all remaining RAM except ISR stack (MSP) stack
-    DRN_ENTER_CRITICAL_SECTION( usis );
+    DRN_ENTER_CRITICAL_SECTION( malLock_uxSavedInterruptStatus );
     if ( currentHeapEnd + incr > limit )
     {
         // Ooops, no more memory available...
 #if( configUSE_MALLOC_FAILED_HOOK == 1 )
         {
             extern void vApplicationMallocFailedHook( void );
-            DRN_EXIT_CRITICAL_SECTION( usis );
+            DRN_EXIT_CRITICAL_SECTION( malLock_uxSavedInterruptStatus );
             vApplicationMallocFailedHook();
         }
 #elif defined(configHARD_STOP_ON_MALLOC_FAILURE)
@@ -706,7 +722,7 @@ void* _sbrk_r( struct _reent* pReent, int incr )
 #else
         // Default, if you prefer to believe your application will gracefully trap out-of-memory...
         pReent->_errno = ENOMEM; // newlib's thread-specific errno
-        DRN_EXIT_CRITICAL_SECTION( usis );
+        DRN_EXIT_CRITICAL_SECTION( malLock_uxSavedInterruptStatus );
 #endif
         return ( char* ) -1; // the malloc-family routine that called sbrk will return 0
     }
@@ -722,7 +738,7 @@ void* _sbrk_r( struct _reent* pReent, int incr )
         stickyHeapBytesRemaining = xPortGetFreeHeapSize();
     }
 
-    DRN_EXIT_CRITICAL_SECTION( usis );
+    DRN_EXIT_CRITICAL_SECTION( malLock_uxSavedInterruptStatus );
     return ( char* ) previousHeapEnd;
 }
 
@@ -745,16 +761,13 @@ char* _sbrk( int incr )
 }
 
 // ----------------------------------------------------------------------------
-static UBaseType_t malLock_uxSavedInterruptStatus;
-
-// ----------------------------------------------------------------------------
 __attribute__( ( weak ) ) void __malloc_lock( struct _reent* r )
 // ----------------------------------------------------------------------------
 {
     ( void )r;
 
 #if  defined(INC_FREERTOS_H) && defined(MV_SYSCALL_USE_EXCLUSIVE_LOCK_FOR_MALLOC)
-    if ( ( g_isrNestCount <= 0 ) && ( xTaskGetSchedulerState() == taskSCHEDULER_RUNNING )  )
+    if ( xTaskGetSchedulerState() == taskSCHEDULER_RUNNING  )
     {
         xSemaphoreTakeRecursive( mallocSemaphore, -1 );
     }
@@ -770,7 +783,7 @@ __attribute__( ( weak ) ) void __malloc_unlock( struct _reent* r )
     ( void )r;
 
 #if  defined(INC_FREERTOS_H) && defined(MV_SYSCALL_USE_EXCLUSIVE_LOCK_FOR_MALLOC)
-    if ( ( g_isrNestCount <= 0 ) && ( xTaskGetSchedulerState() == taskSCHEDULER_RUNNING )  )
+    if ( xTaskGetSchedulerState() == taskSCHEDULER_RUNNING )
     {
         xSemaphoreGiveRecursive( mallocSemaphore );
     }
@@ -784,7 +797,7 @@ __attribute__( ( weak ) ) void __env_lock( void )
 // ----------------------------------------------------------------------------
 {
 #if  defined(INC_FREERTOS_H) && defined(MV_SYSCALL_USE_EXCLUSIVE_LOCK_FOR_ENV)
-    if ( ( g_isrNestCount <= 0 ) && ( xTaskGetSchedulerState() == taskSCHEDULER_RUNNING )  )
+    if ( xTaskGetSchedulerState() == taskSCHEDULER_RUNNING )
     {
         xSemaphoreTakeRecursive( envSemaphore, -1 );
     }
@@ -798,7 +811,7 @@ __attribute__( ( weak ) ) void __env_unlock( void )
 // ----------------------------------------------------------------------------
 {
 #if  defined(INC_FREERTOS_H) && defined(MV_SYSCALL_USE_EXCLUSIVE_LOCK_FOR_ENV)
-    if ( ( g_isrNestCount <= 0 ) && ( xTaskGetSchedulerState() == taskSCHEDULER_RUNNING ) )
+    if ( xTaskGetSchedulerState() == taskSCHEDULER_RUNNING )
     {
         xSemaphoreGiveRecursive( envSemaphore );
     }
