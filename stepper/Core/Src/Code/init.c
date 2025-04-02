@@ -8,9 +8,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "stdio.h"
-
 #include "Console.h"
-
 #include "main.h"
 #include "init.h"
 
@@ -50,8 +48,6 @@ static int CapabilityFunc( int argc, char** argv, void* ctx )
 	);
 	return 0;
 }
-
-
 
 
 void init(TIM_HandleTypeDef tim_handle) {
