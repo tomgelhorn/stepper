@@ -35,6 +35,16 @@ typedef struct SpindlePhysicalParams
 	 * of handling all required PWM steps to change the direction of the spindle.
 	 * 
 	 * The pointer must not be null
+	 *
+     * @param[in,out] h        optional handle of the spindle library.
+     * @param[in,out] context  optional context pointer the user has passed by the SPINDLE_CreateInstance call.
+     * @param[in]     backward sets the direction of the spindle (clockwise or counter clockwise = backward).
+	 *
+	 * The behavior is schematically as follows:
+	 * @startuml
+     * Library -> platform_set_direction_function : Requests a direction change
+     * Library <- platform_set_direction_function
+     * @enduml
 	 */
 	void (*setDirection)(SpindleHandle_t h, void* context, int backward);
 
@@ -43,6 +53,18 @@ typedef struct SpindlePhysicalParams
 	 * necessary for changing the PWM generation itself
 	 * 
 	 * The pointer must not be null
+	 * 
+     * @param[in,out] h         optional handle of the spindle library.
+     * @param[in,out] context   optional context pointer the user has passed by the SPINDLE_CreateInstance call.
+     * @param[in]     dutyCycle value between 0 = 0% and 1 = 100%
+	 *
+	 * The behavior is schematically as follows:
+	 * @startuml
+     * Library -> platform_set_duty_cycle_function : Requests a duty cycle change
+	 * platform_set_duty_cycle_function -> timer_driver : change duty cycle
+	 * platform_set_duty_cycle_function <- timer_driver
+     * Library <- platform_set_duty_cycle_function
+     * @enduml
 	 */
 	void (*setDutyCycle)(SpindleHandle_t h, void* context, float dutyCycle);
 
@@ -51,6 +73,29 @@ typedef struct SpindlePhysicalParams
 	 * the enable outputs od the half bridges of the spindle
 	 * 
 	 * The pointer must not be null
+	 * 
+     * @param[in,out] h         optional handle of the spindle library.
+     * @param[in,out] context   optional context pointer the user has passed by the SPINDLE_CreateInstance call.
+     * @param[in]     ena       value that sets enable or disable state (1 = enabled, 0 = disabled)
+	 *
+	 * The behavior is schematically as follows:
+	 * @startuml
+	 * alt ena = 1
+     *   Library -> platform_enable_function : Requests a duty cycle change
+	 *   platform_enable_function -> timer_driver : enable PWM
+	 *   platform_enable_function <- timer_driver
+	 *   platform_enable_function -> gpio_driver : enable H-bridge
+	 *   platform_enable_function <- gpio_driver
+     *   Library <- platform_enable_function
+	 * else ena = 0
+     *   Library -> platform_enable_function : Requests a duty cycle change
+	 *   platform_enable_function -> timer_driver : disable PWM or set duty cycle to 0
+	 *   platform_enable_function <- timer_driver
+	 *   platform_enable_function -> gpio_driver : disable H-bridge
+	 *   platform_enable_function <- gpio_driver
+     *   Library <- platform_enable_function
+	 * end
+     * @enduml
 	 */
 	void (*enaPWM)      (SpindleHandle_t h, void* context, int ena);
 
@@ -160,5 +205,29 @@ SpindleHandle_t SPINDLE_CreateInstance( unsigned int uxStackDepth, int xPrio, Co
  * \endcode
  */
 
+ /*!
+ * \page lib_port_page Library porting
+ * \section intro_sec Introduction
+ *
+ * The library is written with a minimum set of compiler dependencies to make it portable on most toolchains
+ * and most compilers which are able to compile C. There are no GCC attributes or MSVC pragmas included in the code
+ * furthermore there are no weak functions or other non ISO-C language keywords which are not parsable from
+ * all compilers. To include the library in a project, the following page helps to do the job and can be used as
+ * a step by step quick porting guide.
+ *
+ * \section step_by_step_sec required steps to include the library
+ * -# include all include paths of the library folder (inc-folder) to your project or copy them into your project as needed
+ * -# link all C files (src-folder) to your project or copy them to your project as needed
+ * -# adapt your makefile in case you have one. When using eclipse project this is not required
+ * -# compile the source code once to make sure everything builds without issues and your include paths are correct.
+ * -# now implement the platform functions which are required be the SpindlePhysicalParams_t structure when calling SPINDLE_CreateInstance.
+ * -# when all functions are defined, no error should be returned after the call of SPINDLE_CreateInstance. Porting is done.
+ * 
+ * \section additional note
+ * when porting the platform functions, it is not required to execute anything in the SpindlePhysicalParams_t[setDirection] function, because
+ * the setDutyCycle function and the enaPWM function is called directly after the setDirection function. So it is sufficient to only store a
+ * variable value anywhere and interpret it later in the setDutyCyle function!
+ */
 
-#endif /* INC_STEPPER_CONTROLLER_H_ */
+
+#endif /* INC_SPINDLE_CONTROLLER_H_ */

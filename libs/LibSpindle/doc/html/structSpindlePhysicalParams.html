@@ -168,8 +168,19 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>This function pointer is used to enable or disable the PWM output and to set the enable outputs od the half bridges of the spindle</p>
-<p>The pointer must not be null </p>
-
+<p>The pointer must not be null</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">h</td><td>optional handle of the spindle library. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">context</td><td>optional context pointer the user has passed by the SPINDLE_CreateInstance call. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ena</td><td>value that sets enable or disable state (1 = enabled, 0 = disabled)</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>The behavior is schematically as follows: </p><div class="plantumlgraph">
+<img src="inline_umlgraph_1.png" />
+</div>
+ 
 </div>
 </div>
 <a id="adfaf8529f3786ebbbdf35ac5f82378c9" name="adfaf8529f3786ebbbdf35ac5f82378c9"></a>
@@ -214,8 +225,19 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>This function pointer is used to change the direction of the spindle. It is always called before setDutyCycle and is never called without any other combination of setDutyCycle or enaPWM. This means that it can simply be used to set a variable in the user design instead of handling all required PWM steps to change the direction of the spindle.</p>
-<p>The pointer must not be null </p>
-
+<p>The pointer must not be null</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">h</td><td>optional handle of the spindle library. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">context</td><td>optional context pointer the user has passed by the SPINDLE_CreateInstance call. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">backward</td><td>sets the direction of the spindle (clockwise or counter clockwise = backward).</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>The behavior is schematically as follows: </p><div class="plantumlgraph">
+<img src="inline_umlgraph_3.png" />
+</div>
+ 
 </div>
 </div>
 <a id="aa39c867879c16356fa7496f814e26b72" name="aa39c867879c16356fa7496f814e26b72"></a>
@@ -230,8 +252,19 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>This function pointer is used to change the duty cycle of the spindle. This function is necessary for changing the PWM generation itself</p>
-<p>The pointer must not be null </p>
-
+<p>The pointer must not be null</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">h</td><td>optional handle of the spindle library. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">context</td><td>optional context pointer the user has passed by the SPINDLE_CreateInstance call. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dutyCycle</td><td>value between 0 = 0% and 1 = 100%</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>The behavior is schematically as follows: </p><div class="plantumlgraph">
+<img src="inline_umlgraph_5.png" />
+</div>
+ 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
@@ -243,7 +276,7 @@ Data Fields</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="structSpindlePhysicalParams.html">SpindlePhysicalParams</a></li>
-    <li class="footer">Generated on Sun Feb 16 2025 00:30:29 for LibSpindle-C-Library by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Mon Apr 14 2025 22:03:09 for LibSpindle-C-Library by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

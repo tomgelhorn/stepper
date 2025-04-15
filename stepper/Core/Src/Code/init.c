@@ -20,11 +20,11 @@ static int CapabilityFunc( int argc, char** argv, void* ctx )
 	printf("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\r\nOK",
 	    1, // has spindle
 		1, // has spindle status
-		0, // has stepper
+		1, // has stepper
 		0, // has stepper move relative
 		0, // has stepper move speed
 		0, // has stepper move async
-		0, // has stepper status
+		1, // has stepper status
 		0, // has stepper refrun
 		0, // has stepper refrun timeout
 		0, // has stepper refrun skip
@@ -50,11 +50,14 @@ static int CapabilityFunc( int argc, char** argv, void* ctx )
 }
 
 
-void init(TIM_HandleTypeDef tim_handle) {
+
+void init(TIM_HandleTypeDef tim_handle, SPI_HandleTypeDef* hspi1) {
 	  // set up console
 	  ConsoleHandle_t console_handle = CONSOLE_CreateInstance( 4*configMINIMAL_STACK_SIZE, configMAX_PRIORITIES - 5  );
 
 	  CONSOLE_RegisterCommand(console_handle, "capability", "prints a specified string of capability bits", CapabilityFunc, NULL);
 
+
 	  init_spindle(console_handle, tim_handle);
+	  init_stepper(console_handle, hspi1);
 }

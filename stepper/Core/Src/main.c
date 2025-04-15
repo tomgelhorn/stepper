@@ -133,7 +133,7 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
-  init(htim2);
+  init(htim2, &hspi1);
 
   vTaskStartScheduler();
   /* USER CODE END 2 */

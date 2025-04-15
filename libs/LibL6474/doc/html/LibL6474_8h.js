@@ -3,7 +3,6 @@ var LibL6474_8h =
     [ "L6474_Status", "structL6474__Status.html", "structL6474__Status" ],
     [ "L6474x_Platform", "structL6474x__Platform.html", "structL6474x__Platform" ],
     [ "L6474_BaseParameter_t", "structL6474__BaseParameter__t.html", "structL6474__BaseParameter__t" ],
-    [ "INC_LIBL6474_H_", "LibL6474_8h.html#a53cf9b773b6772920a7ddf52a3e07bda", null ],
     [ "L6474_Handle_t", "LibL6474_8h.html#a31a0c627342d952d0dddf3fbe0643cac", null ],
     [ "L6474_Status_t", "LibL6474_8h.html#afe6a37602588d49b9ed5d1a308977d6a", null ],
     [ "L6474x_Direction_t", "LibL6474_8h.html#a74d57e36e55d111079c64174e961f619", null ],
@@ -32,7 +31,8 @@ var LibL6474_8h =
       [ "errcINTERNAL", "LibL6474_8h.html#aafb11f316ec72214c03013555014eebbaa2afa9f9beb6e0e57ad44b469ef60762", null ],
       [ "errcLOCKING", "LibL6474_8h.html#aafb11f316ec72214c03013555014eebba542a8aafecef8c52d42e537e6b7dfb48", null ],
       [ "errcDEVICE_STATE", "LibL6474_8h.html#aafb11f316ec72214c03013555014eebbad22ec437f96367b7938a52c999578db7", null ],
-      [ "errcPENDING", "LibL6474_8h.html#aafb11f316ec72214c03013555014eebbac707cff173b23da9ae8ef627b177bfb3", null ]
+      [ "errcPENDING", "LibL6474_8h.html#aafb11f316ec72214c03013555014eebbac707cff173b23da9ae8ef627b177bfb3", null ],
+      [ "errcFORBIDDEN", "LibL6474_8h.html#aafb11f316ec72214c03013555014eebbae4ead3ad9188404d7cdd1c4d0c2b340d", null ]
     ] ],
     [ "L6474x_OCD_TH", "LibL6474_8h.html#ae9c0b900e2373b01b2ca16d49f0e8907", [
       [ "ocdth375mA", "LibL6474_8h.html#ae9c0b900e2373b01b2ca16d49f0e8907abd7a62aef9f79b1f33d813a09ab5ed56", null ],
@@ -66,12 +66,14 @@ var LibL6474_8h =
       [ "smMICRO16", "LibL6474_8h.html#aeb572e4b787e8746f0d5e9475b0ffb8da818e6ddb4c69f3d47eb3e97b27cccf73", null ]
     ] ],
     [ "L6474_CreateInstance", "LibL6474_8h.html#a86f889135167d8b4e889c620d0bf9990", null ],
+    [ "L6474_DestroyInstance", "LibL6474_8h.html#a50d6d2ccc49478ff0ee3f42a24a8f496", null ],
     [ "L6474_GetAbsolutePosition", "LibL6474_8h.html#a28e38522674ae36aadb4c880eae3a1e7", null ],
     [ "L6474_GetAlarmEnables", "LibL6474_8h.html#a4b5bfb89269e877f95fa6c003e685f71", null ],
     [ "L6474_GetElectricalPosition", "LibL6474_8h.html#a76f2ad47b2c1b923186a3881e5cc97ba", null ],
     [ "L6474_GetPositionMark", "LibL6474_8h.html#a693afe2b1029683cbfb988b4e95dbed6", null ],
     [ "L6474_GetProperty", "LibL6474_8h.html#a772c5810e20ed1056abaedf614f8adb3", null ],
-    [ "L6474_GetStatus", "LibL6474_8h.html#a5396285cf065294a173d860342255e04", null ],
+    [ "L6474_GetState", "LibL6474_8h.html#abd4a11ba27a26c9addb848e3aa3ad5c5", null ],
+    [ "L6474_GetStatus", "LibL6474_8h.html#a72614a564fe727aefceab5121943d66f", null ],
     [ "L6474_GetStepMode", "LibL6474_8h.html#a3570aff9f639c99f46549923cebdd511", null ],
     [ "L6474_Initialize", "LibL6474_8h.html#a7b7f8efa1a972e53487d5cdfc8282784", null ],
     [ "L6474_IsMoving", "LibL6474_8h.html#a0c018c06758c809898408d249b3723b3", null ],

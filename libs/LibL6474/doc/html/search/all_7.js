@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['malloc_68',['malloc',['../structL6474x__Platform.html#a78537faef15137ae9f055bc5ca710209',1,'L6474x_Platform']]]
+  ['malloc_0',['malloc',['../structL6474x__Platform.html#a47159af6df8de0ad4f9f52a2665f132f',1,'L6474x_Platform']]]
 ];

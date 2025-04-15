@@ -26,6 +26,10 @@ var NAVTREE =
 [
   [ "LibSpindle-C-Library", "index.html", [
     [ "FreeRTOS Spindle Library", "index.html", "index" ],
+    [ "Library porting", "lib_port_page.html", [
+      [ "required steps to include the library", "lib_port_page.html#step_by_step_sec", null ],
+      [ "note", "lib_port_page.html#additional", null ]
+    ] ],
     [ "Data Structures", "annotated.html", [
       [ "Data Structures", "annotated.html", "annotated_dup" ],
       [ "Data Structure Index", "classes.html", null ],

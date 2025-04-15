@@ -268,26 +268,86 @@ typedef struct L6474x_Platform
 // --------------------------------------------------------------------------------------------------------------------
 {
 	/*!
-	 * classic malloc pointer which returns null or a memory void* pointer with the given size by the first argument
+	 * classic malloc function pointer which returns null in case of an error or a memory void* pointer with the 
+	 * given size by the first argument. The user must provide this function as part of the platform abstraction.
+	 * The minimal functionallity can be reached by providing a function which simply calles malloc.
+	 *
+     * @param[in] size number of bytes requested by the memory allocation request
+	 *
+	 * The behavior is schematically as follows:
+	 * @startuml
+     * Library -> platform_malloc_function : Requests dynamic memory
+	 * platform_malloc_function -> stdlib  : call malloc
+	 * platform_malloc_function <- stdlib
+     * Library <- platform_malloc_function : returns memory pointer
+     * @enduml
 	 */
 	void* (*malloc)    ( unsigned int size                                                                            );
 
 	/*!
-	 * classic free function which releases memory previously allocated by malloc
+	 * classic free function pointer which releases memory previously allocated by malloc. 
+	 * The user must provide this function as part of the platform abstraction.
+	 * The minimal functionallity can be reached by providing a function which simply calles free in case
+	 * The malloc abstraction function is a call to malloc.
+	 * 
+     * @param[in] pMem pointer of the memory space which shall be freed
+	 *
+	 * The behavior is schematically as follows:
+	 * @startuml
+     * Library -> platform_free_function : Requests release of allocated memory
+	 * platform_free_function -> stdlib : call free
+	 * platform_free_function <- stdlib
+     * Library <- platform_free_function
+     * @enduml
 	 */
 	void  (*free)      ( const void* const pMem                                                                       );
 
 	/*!
 	 * the tranfer function is used to provide bus access to the stepper driver chip
+	 * 
+     * @param[in,out] pIO    optional user context pointer which has been passed by the L6474_CreateInstance call
+     * @param[out]    pRX    pointer to the receive data buffer
+     * @param[in]     pTX    pointer to the transmit data buffer
+     * @param[in]     length number of bytes for RX and TX
+	 *
+	 * The behavior is schematically as follows:
+	 * @startuml
+     * Library -> platform_transfer_function : Requests read and write simultanously
+	 * platform_transfer_function -> spi_driver : rx + tx
+	 * platform_transfer_function <- spi_driver
+     * Library <- platform_transfer_function
+     * @enduml
 	 */
 	int   (*transfer)  ( void* pIO, char* pRX, const char* pTX, unsigned int length                                   );
+
 	/*!
 	 * the reset function is used to provide gpio access to the reset of the stepper driver chip
+	 * 
+     * @param[in,out] pGPO   optional user context pointer which has been passed by the L6474_CreateInstance call
+     * @param[in]     ena    output state to set without level inversion
+	 *
+	 * The behavior is schematically as follows:
+	 * @startuml
+     * Library -> platform_reset_function : Requests reset of the chip
+	 * platform_reset_function -> gpio_driver : set pin to !ena
+	 * platform_reset_function <- gpio_driver
+     * Library <- platform_reset_function
+     * @enduml
 	 */
 	void  (*reset)     ( void* pGPO, const int ena                                                                    );
 
 	/*!
 	 * the sleep function implements a wait time with the argument in milliseconds
+	 * 
+     * @param[in]     ms    time to sleep in milliseconds
+	 *
+	 * The behavior is schematically as follows:
+	 * @startuml
+     * Library -> platform_sleep_function : Requests sleep by the library
+	 * platform_sleep_function -> scheduler : sleep(ms)
+	 * platform_sleep_function <- scheduler
+     * Library <- platform_sleep_function
+     * @enduml
 	 */
 	void  (*sleep)     ( unsigned int ms                                                                              );
 
@@ -295,6 +355,26 @@ typedef struct L6474x_Platform
 	/*!
 	 * the step function is a synchronous blocking function until the movement has been fully executed.
 	 * This can be e.g. a PWM generation via GPIO pulsing given by the numPulses argument
+	 * 
+     * @param[in,out] pPWM      optional user context pointer which has been passed by the L6474_CreateInstance call
+     * @param[in]     dir       output signal to drive the stepper clock wise or counter clockwise
+     * @param[in]     numPulses number of high and low transitions to generate a pulse for the stepper chip
+	 *
+	 * The behavior is schematically as follows:
+	 * @startuml
+     * Library -> platform_step_function : Requests generating pulses async
+	 *   loop 'numPulses' times
+     *     platform_step_function -> gpio_driver : Set high
+     *     platform_step_function <- gpio_driver
+     *     platform_step_function -> scheduler : sleep(ms)
+     *     platform_step_function <- scheduler
+     *     platform_step_function -> gpio_driver : Set low
+     *     platform_step_function <- gpio_driver
+     *     platform_step_function -> scheduler : sleep(ms)
+     *     platform_step_function <- scheduler
+     *   end
+     * Library <- platform_step_function
+     * @enduml
 	 */
 	int   (*step)      ( void* pPWM, int dir, unsigned int numPulses                                                  );
 #else
@@ -302,12 +382,35 @@ typedef struct L6474x_Platform
 	 * the stepAsync function is an asynchronous non-blocking function which e.g. enables a timer which then generates
 	 * the required amount of pulses given by the numPulses argument. The doneCLB is a callback provided by the library
 	 * which is called when the asynchronous operation has been done
+	 * 
+     * @param[in,out] pPWM      optional user context pointer which has been passed by the L6474_CreateInstance call
+     * @param[in]     dir       output signal to drive the stepper clock wise or counter clockwise
+     * @param[in]     numPulses number of high and low transitions to generate a pulse for the stepper chip
+     * @param[in]     doneClb   callback function pointer, which is required to be called after the async process has been finished
+     * @param[in]     h         handle pointer which is at least required by the callback of doneClb argument
+	 *
+	 * The behavior is schematically as follows:
+	 * @startuml
+     * Library ->> platform_step_function : Requests generating pulses async
+	 *   loop 'numPulses' times
+     *     platform_step_function -> gpio_driver : Set high
+     *     platform_step_function <- gpio_driver
+     *     platform_step_function -> scheduler : sleep(ms)
+     *     platform_step_function <- scheduler
+     *     platform_step_function -> gpio_driver : Set low
+     *     platform_step_function <- gpio_driver
+     *     platform_step_function -> scheduler : sleep(ms)
+     *     platform_step_function <- scheduler
+     *   end
+     * @enduml
 	 */
-	int   (*stepAsync) ( void* pPWM, int dir, unsigned int numPulses, void (*doneClb)(L6474_Handle_t), L6474_Handle_t );
+	int   (*stepAsync) ( void* pPWM, int dir, unsigned int numPulses, void (*doneClb)(L6474_Handle_t), L6474_Handle_t h );
 
 	/*!
 	 * the cancelStep function is a synchronous blocking function which cancels the asynchronous prevously started step
 	 * operation in case it has not been finished
+	 *
+     * @param[in,out] pPWM      optional user context pointer which has been passed by the L6474_CreateInstance call
 	 */
 	int   (*cancelStep)( void* pPWM                                                                                   );
 #endif
@@ -330,6 +433,8 @@ typedef struct L6474x_Platform
 	 * in case the FLAG pin of the stepper driver chip is used, this function returns the current value of the FLAG pin.
 	 * This is an optional abstraction function and is not required for regular operation because the library can
 	 * read the device state by the status register as well.
+	 *
+     * @param[in,out] pIO      optional user context pointer which has been passed by the L6474_CreateInstance call
 	 */
 	int   (*getFlag)   ( void* pIO                                                                                    );
 #endif
@@ -852,5 +957,25 @@ int L6474_SetAlarmEnables(L6474_Handle_t h, int bits);
  * 
  * \endcode
  */
-
-#endif /* INC_LIBL6474_H_ */
+ 
+ /*! 
+ * \page lib_port_page Library porting
+ * \section intro_sec Introduction
+ *
+ * The library is written with a minimum set of compiler dependencies to make it portable on most toolchains
+ * and most compilers which are able to compile C. There are no GCC attributes or MSVC pragmas included in the code
+ * furthermore there are no weak functions or other non ISO-C language keywords which are not parsable from
+ * all compilers. To include the library in a project, the following page helps to do the job and can be used as
+ * a step by step quick porting guide.
+ *
+ * \section step_by_step_sec required steps to include the library
+ * -# include all include paths of the library folder (inc-folder) to your project or copy them into your project as needed
+ * -# link all C files (src-folder) to your project or copy them to your project as needed
+ * -# adapt your makefile in case you have one. When using eclipse project this is not required
+ * -# copy the template header LibL6474Config.h file to your project or create your own and adapt the compile time parameters as needed.
+ * -# compile the source code once to make sure everything builds without issues and your include paths are correct.
+ * -# now implement the platform functions which are required be the L6474x_Platform_t structure when calling L6474_CreateInstance.
+ * -# when all functions are defined, no error should be returned after the call of L6474_CreateInstance. Porting is done.
+ */
+ 
+ #endif /* INC_LIBL6474_H_ */

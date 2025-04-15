@@ -1,12 +1,12 @@
 var indexSectionsWithContent =
 {
-  0: "acefilmost",
+  0: "acefilmnoprst",
   1: "cs",
   2: "s",
   3: "s",
   4: "acems",
   5: "s",
-  6: "fls"
+  6: "flps"
 };
 
 var indexSectionNames =

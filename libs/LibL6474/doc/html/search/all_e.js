@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['wrong_5fcmd_95',['WRONG_CMD',['../structL6474__Status.html#a3f7f1a9d385b21da40834372f279bc72',1,'L6474_Status']]]
+  ['uvlo_0',['UVLO',['../structL6474__Status.html#a61a90c681ac872d992c84f18e672ce3f',1,'L6474_Status']]]
 ];

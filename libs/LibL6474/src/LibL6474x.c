@@ -1286,7 +1286,7 @@ int L6474_StepIncremental(L6474_Handle_t h, int steps )
 #else
 	h->pending = 1;
 	(void)L6474_HelperReleaseStep;
-	ret = h->platform->step(h->pPWM, direction, steps);
+	ret = h->platform->step(h->pPWM, ( ( steps < 0 ) ? -steps : steps ), steps);
 	h->pending = 0;
 #endif
 

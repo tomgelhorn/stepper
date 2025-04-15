@@ -53,8 +53,8 @@ typedef int (*ConsoleWriteStream_t)(void* pContext, const char* pBuffer, int num
  *
  * The return value of a console function is a null pointer in case an error occured or a pointer of type ConsoleHandle_t.
  * 
- * param uxStackDepth is the stack depth of the console processor thread in words
- * param xPrio is the console processor priority. This should always be on a low level because the stdlib function
+ * @param uxStackDepth is the stack depth of the console processor thread in words
+ * @param xPrio is the console processor priority. This should always be on a low level because the stdlib function
  * may not block and so the processor always runs whenever it can. In case the reception of the newlib is blocking and
  * interrupt based, the priority could be higher!
  */
@@ -71,11 +71,11 @@ void CONSOLE_DestroyInstance( ConsoleHandle_t h );
  * when the user enters the given command string. The arguments and an additional context pointer are passed by the console
  * processor to the function as well.
  * 
- * param h is of type ConsoleHandle_t which is created by a call of CONSOLE_CreateInstance
- * param cmd is of type char* which is the case sensitive name of the command
- * param help is of type char* which is the help text or description of the command when the user types help
- * param func is of type CONSOLE_CommandFunc which is the function pointer to the command
- * param context is of type void* which is an optional data pointer which is passed to the function when called
+ * @param h is of type ConsoleHandle_t which is created by a call of CONSOLE_CreateInstance
+ * @param cmd is of type char* which is the case sensitive name of the command
+ * @param help is of type char* which is the help text or description of the command when the user types help
+ * @param func is of type CONSOLE_CommandFunc which is the function pointer to the command
+ * @param context is of type void* which is an optional data pointer which is passed to the function when called
  */
 int CONSOLE_RegisterCommand( ConsoleHandle_t h, char* cmd, char* help, CONSOLE_CommandFunc func, void* context );
 
@@ -84,9 +84,9 @@ int CONSOLE_RegisterCommand( ConsoleHandle_t h, char* cmd, char* help, CONSOLE_C
  * when the user enters the given alias command string. Arguments will not be passed from an alias command to
  * the mapped command, so the alias should be specified with the required commands accordingly
  *
- * param h is of type ConsoleHandle_t which is created by a call of CONSOLE_CreateInstance
- * param cmd is of type char* which is the case sensitive name of the alias command
- * param aliasCmd is of type char* which is the mapped command and its args and is visible when the user types help
+ * @param h is of type ConsoleHandle_t which is created by a call of CONSOLE_CreateInstance
+ * @param cmd is of type char* which is the case sensitive name of the alias command
+ * @param aliasCmd is of type char* which is the mapped command and its args and is visible when the user types help
  */
 int CONSOLE_RegisterAlias( ConsoleHandle_t h, char* cmd, char* aliasCmd );
 
@@ -94,8 +94,8 @@ int CONSOLE_RegisterAlias( ConsoleHandle_t h, char* cmd, char* aliasCmd );
  * The CONSOLE_RemoveAliasOrCommand function is used to remove custom commands or alias entries which are mapped
  * in the console processor.
  *
- * param h is of type ConsoleHandle_t which is created by a call of CONSOLE_CreateInstance
- * param cmd is of type char* which is the case sensitive name of the alias or command
+ * @param h is of type ConsoleHandle_t which is created by a call of CONSOLE_CreateInstance
+ * @param cmd is of type char* which is the case sensitive name of the alias or command
  */
 int CONSOLE_RemoveAliasOrCommand( ConsoleHandle_t h, char* cmd);
 
@@ -105,9 +105,9 @@ int CONSOLE_RemoveAliasOrCommand( ConsoleHandle_t h, char* cmd);
  * NULL, it will be set back to stdin respectively stdout. In case of an error, the
  * last stream configuration is kept and -1 is returned, otherwise 0
  *
- * param h is of type ConsoleHandle_t which is created by a call of CONSOLE_CreateInstance
- * param rdFunc is of type ConsoleReadStream_t which is the new stream read function for the command processor
- * param wrFunc is of type ConsoleWriteStream_t which is the new stream write function for the command processor
+ * @param h is of type ConsoleHandle_t which is created by a call of CONSOLE_CreateInstance
+ * @param rdFunc is of type ConsoleReadStream_t which is the new stream read function for the command processor
+ * @param wrFunc is of type ConsoleWriteStream_t which is the new stream write function for the command processor
  *
  * NOTE it might be that not on all platforms it is possible to use this function, it then returns -2 if it is
  * not implemented properly. So far only newlib stdlib is supported!
@@ -220,5 +220,27 @@ int CONSOLE_RedirectStreams( ConsoleHandle_t h, ConsoleReadStream_t rdFunc, Cons
  *
  * \endcode
  */
+
+
+ /*!
+ * \page lib_port_page Library porting
+ * \section intro_sec Introduction
+ *
+ * The library is written with a minimum set of compiler dependencies to make it portable on most toolchains
+ * and most compilers which are able to compile C. There are no GCC attributes or MSVC pragmas included in the code
+ * furthermore there are no weak functions or other non ISO-C language keywords which are not parsable from
+ * all compilers. To include the library in a project, the following page helps to do the job and can be used as
+ * a step by step quick porting guide.
+ *
+ * \section step_by_step_sec required steps to include the library
+ * -# include all include paths of the library folder (inc-folder) to your project or copy them into your project as needed
+ * -# link all C files (src-folder) to your project or copy them to your project as needed
+ * -# adapt your makefile in case you have one. When using eclipse project this is not required
+ * -# copy the template header ConsoleConfig.h file to your project or create your own and adapt the compile time @parameters as needed.
+ * -# compile the source code once to make sure everything builds without issues and your include paths are correct.
+ * -# make sure FreeRTOS is implemented properly and compiles with the defualt include paths.
+ * -# no error should be returned after the call of CONSOLE_CreateInstance. Porting is done.
+ */
+
 
 #endif /* INC_CONSOLE_CONSOLE_H_ */
