@@ -21,20 +21,20 @@ static int CapabilityFunc( int argc, char** argv, void* ctx )
 	    1, // has spindle
 		1, // has spindle status
 		1, // has stepper
-		0, // has stepper move relative
+		1, // has stepper move relative
 		0, // has stepper move speed
 		0, // has stepper move async
-		1, // has stepper status
+		0, // has stepper status
 		0, // has stepper refrun
 		0, // has stepper refrun timeout
 		0, // has stepper refrun skip
 		0, // has stepper refrun stay enabled
-		0, // has stepper reset
+		1, // has stepper reset
 		0, // has stepper position
-		0, // has stepper config
+		1, // has stepper config
 		0, // has stepper config torque
 		0, // has stepper config throvercurr
-		0, // has stepper config powerena
+		1, // has stepper config powerena
 		0, // has stepper config stepmode
 		0, // has stepper config timeoff
 		0, // has stepper config timeon
