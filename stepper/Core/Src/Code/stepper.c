@@ -6,15 +6,21 @@
 #include "string.h"
 #include "LibL6474Config.h"
 #include "stm32f7xx_hal_spi.h"
-
+#include "FreeRTOS.h"
+#include "task.h"
 
 typedef struct {
 	L6474_Handle_t h;
 	int is_powered;
 	int is_referenced;
+	int is_canceled;
 
 	int position;
+
+	TaskHandle_t step_task;
 } StepperContext;
+
+static int StepTimerCancelAsync(void* pPWM);
 
 static void* StepLibraryMalloc( unsigned int size )
 {
@@ -71,41 +77,16 @@ static void StepTimer( void* pPWM, int dir, unsigned int numPulses )
 		HAL_GPIO_WritePin(STEP_PULSE_GPIO_Port, STEP_PULSE_Pin, 0);
 		HAL_Delay(1);
 	}
-
 }
 
-static void StepTimerCancelAsync()
-{
-  return;
-}
+typedef struct {
+	void *pPWM;
+	int dir;
+	unsigned int numPulses;
+	void (*doneClb)(L6474_Handle_t);
+	L6474_Handle_t h;
+} StepTaskParams;
 
-void teststepper(int argc, char** argv, void* ctx) {
-	(void)argc;
-	(void)argv;
-
-	L6474_Handle_t h = *(L6474_Handle_t*)ctx;
-
-	L6474_BaseParameter_t param;
-	param.stepMode = smMICRO16;
-	param.OcdTh = ocdth6000mA;
-	param.TimeOnMin = 0x29;
-	param.TimeOffMin = 0x29;
-	param.TorqueVal = 0x11;
-	param.TFast = 0x19;
-
-	int result = 0;
-
-	result |= L6474_ResetStandBy(h);
-
-	result |= L6474_Initialize(h, &param);
-
-	result |= L6474_SetPowerOutputs(h, 1);
-
-	if ( result == 0 )
-	{
-	    result |= L6474_StepIncremental(h, 1000 );
-	}
-}
 
 static int reset(StepperContext* stepper_ctx){
 	L6474_BaseParameter_t param;
@@ -134,10 +115,10 @@ static int reset(StepperContext* stepper_ctx){
 static int powerena(StepperContext* stepper_ctx, int argc, char** argv) {
 	if (argc == 2) {
 		printf("Current Powerstate: %d\r\n", stepper_ctx->is_powered);
+		return 0;
 	}
 	else if (argc == 4 && strcmp(argv[2], "-v") == 0) {
 		int ena = atoi(argv[3]);
-
 		if (ena != 0 && ena != 1) {
 			printf("Invalid argument for powerena\r\n");
 			return -1;
@@ -154,6 +135,7 @@ static int powerena(StepperContext* stepper_ctx, int argc, char** argv) {
 
 static int reference(StepperContext* stepper_ctx, int argc, char** argv) {
 	stepper_ctx->is_referenced = 1; //hehe
+	return 0;
 }
 
 
@@ -163,7 +145,7 @@ static int config(StepperContext* stepper_ctx, int argc, char** argv) {
 		return -1;
 	}
 	if (strcmp(argv[1], "powerena") == 0) {
-		powerena(stepper_ctx, argc, argv);
+		return powerena(stepper_ctx, argc, argv);
 	}
 	else {
 		printf("Invalid command\r\n");
@@ -193,27 +175,77 @@ static int stepperConsoleFunction(int argc, char** argv, void* ctx) {
 	}
 	if (strcmp(argv[0], "move") == 0 )
 	{
-		move(stepper_ctx, atoi(argv[1]));
+		result = move(stepper_ctx, atoi(argv[1]));
 	}
 	else if (strcmp(argv[0], "reset") == 0) {
 		result = reset(stepper_ctx);
 	}
 	else if (strcmp(argv[0], "config") == 0) {
-		config(stepper_ctx, argc, argv);
+		result = config(stepper_ctx, argc, argv);
 	}
 	else if (strcmp(argv[0], "reference") == 0) {
-		reference(stepper_ctx, argc, argv);
+		result = reference(stepper_ctx, argc, argv);
+	}
+	else if (strcmp(argv[0], "cancel") == 0) {
+		result = StepTimerCancelAsync(NULL);
 	}
 	else {
 		printf("Invalid command\r\n");
 		return -1;
 	}
-
+	if (result == 0) {
+		printf("OK\r\n");
+	}
+	else {
+		printf("FAIL\r\n");
+	}
 	return result;
 }
 
 L6474x_Platform_t p;
 StepperContext stepper_ctx;
+
+static void StepTask(void* p){
+	StepTaskParams* params = (StepTaskParams*)p;
+	HAL_GPIO_WritePin(STEP_DIR_GPIO_Port, STEP_DIR_Pin, !!params->dir);
+	for (unsigned int i = 0; i < params->numPulses; i++) {
+		if (stepper_ctx.is_canceled) {
+			break;
+		}
+		HAL_GPIO_WritePin(STEP_PULSE_GPIO_Port, STEP_PULSE_Pin, 1);
+		HAL_Delay(1);
+		HAL_GPIO_WritePin(STEP_PULSE_GPIO_Port, STEP_PULSE_Pin, 0);
+		HAL_Delay(1);
+	}
+
+	params->doneClb(params->h);
+
+
+	free(params);
+	StepTimerCancelAsync(NULL);
+	vTaskDelete(NULL);
+}
+
+static int StepAsyncTimer(void *pPWM, int dir, unsigned int numPulses, void (*doneClb)(L6474_Handle_t),L6474_Handle_t h){
+	StepTaskParams* params = (StepTaskParams*)pvPortMalloc(sizeof(StepTaskParams));
+	params->pPWM = pPWM;
+	params->dir = dir;
+	params->numPulses = numPulses;
+	params->doneClb = doneClb;
+	params->h = h;
+
+	stepper_ctx.is_canceled = 0;
+	xTaskCreate(StepTask, "stepper", 10000, params, configMAX_PRIORITIES-5, &(stepper_ctx.step_task));
+	return 0;
+}
+
+
+
+static int StepTimerCancelAsync(void* pPWM)
+{
+	stepper_ctx.is_canceled = 1;
+	return 0;
+}
 
 void init_stepper(ConsoleHandle_t console_handle, SPI_HandleTypeDef* hspi1){
 
@@ -228,8 +260,9 @@ void init_stepper(ConsoleHandle_t console_handle, SPI_HandleTypeDef* hspi1){
 	p.transfer   = StepDriverSpiTransfer;
 	p.reset      = StepDriverReset;
 	p.sleep      = StepLibraryDelay;
-	p.step       = StepTimer;
-	//p.cancelStep = StepTimerCancelAsync;
+	//p.step       = StepTimer;
+	p.stepAsync  = StepAsyncTimer;
+	p.cancelStep = StepTimerCancelAsync;
 
 
 	// now create the handle
