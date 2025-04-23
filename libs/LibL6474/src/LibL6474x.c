@@ -146,12 +146,12 @@ typedef struct L6474x_ParameterDescriptor
 struct L6474_Handle
 // --------------------------------------------------------------------------------------------------------------------
 {
-	L6474x_State_t     state;
-	int                pending;
-	void*              pIO;
-	void*              pGPO;
-	void*              pPWM;
-	L6474x_Platform_t* platform;
+	L6474x_State_t    state;
+	int               pending;
+	void*             pIO;
+	void*             pGPO;
+	void*             pPWM;
+	L6474x_Platform_t platform;
 };
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -221,7 +221,7 @@ static int L6474_GetStatusCommand(L6474_Handle_t h)
 	unsigned char txBuff[STEP_CMD_STA_LENGTH] = { 0 };
 
 	txBuff[0] = STEP_CMD_STA_PREFIX | 0;
-	int ret = h->platform->transfer(h->pIO, (char*)rxBuff, (const char*)txBuff, length);
+	int ret = h->platform.transfer(h->pIO, (char*)rxBuff, (const char*)txBuff, length);
 
 	if ( ret != 0 )
 		return errcINTERNAL;
@@ -245,7 +245,7 @@ static int L6474_NopCommand(L6474_Handle_t h)
 	unsigned char txBuff[STEP_CMD_NOP_LENGTH] = { 0 };
 
 	txBuff[0] = STEP_CMD_NOP_PREFIX | 0;
-	int ret = h->platform->transfer(h->pIO, (char*)rxBuff, (const char*)txBuff, length);
+	int ret = h->platform.transfer(h->pIO, (char*)rxBuff, (const char*)txBuff, length);
 
 	if ( ret != 0 )
 		return errcINTERNAL;
@@ -275,7 +275,7 @@ static int L6474_GetParamCommand(L6474_Handle_t h, int addr)
 	unsigned char txBuff[STEP_CMD_GET_MAX_PAYLOAD] = { STEP_CMD_NOP_PREFIX };
 
 	txBuff[0] = STEP_CMD_GET_PREFIX | addr;
-	int ret = h->platform->transfer(h->pIO, (char*)rxBuff, (const char*)txBuff, length);
+	int ret = h->platform.transfer(h->pIO, (char*)rxBuff, (const char*)txBuff, length);
 
 	if ( ret != 0 )
 		return errcINTERNAL;
@@ -357,7 +357,7 @@ static int L6474_SetParamCommand(L6474_Handle_t h, int addr, int value)
 	    	return errcINTERNAL;
 	}
 
-	int ret = h->platform->transfer(h->pIO, (char*)rxBuff, (const char*)txBuff, length);
+	int ret = h->platform.transfer(h->pIO, (char*)rxBuff, (const char*)txBuff, length);
 
 	if ( ret != 0 )
 		return errcINTERNAL;
@@ -388,7 +388,7 @@ static int L6474_EnableCommand(L6474_Handle_t h)
 	unsigned char txBuff[STEP_CMD_ENA_LENGTH] = { 0 };
 
 	txBuff[0] = STEP_CMD_ENA_PREFIX | 0;
-	int ret = h->platform->transfer(h->pIO, (char*)rxBuff, (const char*)txBuff, length);
+	int ret = h->platform.transfer(h->pIO, (char*)rxBuff, (const char*)txBuff, length);
 
 	if ( ret != 0 )
 		return errcINTERNAL;
@@ -416,7 +416,7 @@ static int L6474_DisableCommand(L6474_Handle_t h)
 	unsigned char txBuff[STEP_CMD_DIS_LENGTH] = { 0 };
 
 	txBuff[0] = STEP_CMD_DIS_PREFIX | 0;
-	int ret = h->platform->transfer(h->pIO, (char*)rxBuff, (const char*)txBuff, length);
+	int ret = h->platform.transfer(h->pIO, (char*)rxBuff, (const char*)txBuff, length);
 
 	if ( ret != 0 )
 		return errcINTERNAL;
@@ -430,7 +430,7 @@ static int L6474_DisableCommand(L6474_Handle_t h)
 	h->state   = stDISABLED;
 #if defined(LIBL6474_STEP_ASYNC) && ( LIBL6474_STEP_ASYNC == 1 )
 	h->pending = 0;
-	h->platform->cancelStep(h->pPWM);
+	h->platform.cancelStep(h->pPWM);
 #endif
 	return errcNONE;
 }
@@ -468,14 +468,24 @@ L6474_Handle_t L6474_CreateInstance(L6474x_Platform_t* p, void* pIO, void* pGPO,
 	if ( h == 0 )
 		return 0;
 
-	h->pGPO     = pGPO;
-	h->pIO      = pIO;
-	h->pPWM     = pPWM;
-	h->platform = p;
-	h->pending  = 0;
-	h->state    = stRESET;
+	h->pGPO                = pGPO;
+	h->pIO                 = pIO;
+	h->pPWM                = pPWM;
+#if defined(LIBL6474_STEP_ASYNC) && ( LIBL6474_STEP_ASYNC == 1 )
+	h->platform.cancelStep = p->cancelStep;
+	h->platform.stepAsync  = p->stepAsync;
+#else
+	h->platform.step       = p->step;
+#endif
+	h->platform.free       = p->free;
+	h->platform.malloc     = p->malloc;
+	h->platform.reset      = p->reset;
+	h->platform.sleep      = p->sleep;
+	h->platform.transfer   = p->transfer;
+	h->pending             = 0;
+	h->state               = stRESET;
 
-	h->platform->reset(h->pGPO, 1);
+	h->platform.reset(h->pGPO, 1);
 
 	(void)L6474_NopCommand;
 	return h;
@@ -492,11 +502,11 @@ int L6474_DestroyInstance(L6474_Handle_t h)
 	if (L6474_HelperLock(h) != 0)
 		return errcLOCKING;
 
-	h->platform->reset(h->pGPO, 1);
+	h->platform.reset(h->pGPO, 1);
 #if defined(LIBL6474_HAS_LOCKING) && LIBL6474_HAS_LOCKING == 1
 	void  (*pUnlock)(void) = h->platform->unlock;
 #endif
-	h->platform->free(h);
+	h->platform.free(h);
 
 #if defined(LIBL6474_HAS_LOCKING) && LIBL6474_HAS_LOCKING == 1
 	if ( pUnlock != 0 )
@@ -525,8 +535,8 @@ int L6474_ResetStandBy(L6474_Handle_t h)
 #if defined(LIBL6474_STEP_ASYNC) && ( LIBL6474_STEP_ASYNC == 1 )
 		if ( h->pending != 0 )
 		{
-			h->platform->cancelStep(h->pPWM);
-			h->platform->sleep(IN_MILLISEC(1));
+			h->platform.cancelStep(h->pPWM);
+			h->platform.sleep(IN_MILLISEC(1));
 			h->pending = 0;
 		}
 #endif
@@ -539,10 +549,10 @@ int L6474_ResetStandBy(L6474_Handle_t h)
 		}
 	}
 
-	h->platform->reset(h->pGPO, 1);
+	h->platform.reset(h->pGPO, 1);
 	h->state = stRESET;
 
-	h->platform->sleep(IN_MILLISEC(1));
+	h->platform.sleep(IN_MILLISEC(1));
 	L6474_HelperUnlock(h);
 
 	return errcNONE;
@@ -565,6 +575,27 @@ int L6474_SetBaseParameter(L6474_BaseParameter_t* p)
 
 	return errcNONE;
 }
+
+
+// --------------------------------------------------------------------------------------------------------------------
+char L6474_EncodePhaseCurrent(float mA)
+// --------------------------------------------------------------------------------------------------------------------
+{
+	if ( mA >= 4000.0f ) return 0x7F;
+	else if ( mA <= 31.25f ) return 0x00;
+	else return ( ( mA + 15.625f ) / 31.25f );
+}
+
+
+// --------------------------------------------------------------------------------------------------------------------
+int L6474_EncodePhaseCurrentParameter(L6474_BaseParameter_t* p, float mA)
+// --------------------------------------------------------------------------------------------------------------------
+{
+	if ( p == 0 ) return errcNULL_ARG;
+	p->TorqueVal = L6474_EncodePhaseCurrent(mA);
+	return errcNONE;
+}
+
 
 // --------------------------------------------------------------------------------------------------------------------
 int L6474_Initialize(L6474_Handle_t h, L6474_BaseParameter_t* p)
@@ -590,10 +621,10 @@ int L6474_Initialize(L6474_Handle_t h, L6474_BaseParameter_t* p)
 		}
 	}
 
-	h->platform->reset(h->pGPO, 0);
+	h->platform.reset(h->pGPO, 0);
 	h->state = stDISABLED;
 
-	h->platform->sleep(IN_MILLISEC(10));
+	h->platform.sleep(IN_MILLISEC(10));
 
 	//Now we have to write the configuration register
 	unsigned int CONFIG = 0x2E88; // reset default value
@@ -605,7 +636,7 @@ int L6474_Initialize(L6474_Handle_t h, L6474_BaseParameter_t* p)
 
 	if ( ( val = L6474_SetParamCommand(h, STEP_REG_CONFIG, CONFIG) ) != 0 )
 	{
-		h->platform->reset(h->pGPO, 1);
+		h->platform.reset(h->pGPO, 1);
 		h->state = stRESET;
 		L6474_HelperUnlock(h);
 		return val;
@@ -613,7 +644,7 @@ int L6474_Initialize(L6474_Handle_t h, L6474_BaseParameter_t* p)
 
 	if ( ( val = L6474_SetParamCommand(h, STEP_REG_OCD_TH, p->OcdTh) ) != 0 )
 	{
-		h->platform->reset(h->pGPO, 1);
+		h->platform.reset(h->pGPO, 1);
 		h->state = stRESET;
 		L6474_HelperUnlock(h);
 		return val;
@@ -621,7 +652,7 @@ int L6474_Initialize(L6474_Handle_t h, L6474_BaseParameter_t* p)
 
 	if ( ( val = L6474_SetParamCommand(h, STEP_REG_TVAL, p->TorqueVal) ) != 0 )
 	{
-		h->platform->reset(h->pGPO, 1);
+		h->platform.reset(h->pGPO, 1);
 		h->state = stRESET;
 		L6474_HelperUnlock(h);
 		return val;
@@ -629,7 +660,7 @@ int L6474_Initialize(L6474_Handle_t h, L6474_BaseParameter_t* p)
 
 	if ( ( val = L6474_SetParamCommand(h, STEP_REG_TOFF_MIN, p->TimeOffMin) ) != 0 )
 	{
-		h->platform->reset(h->pGPO, 1);
+		h->platform.reset(h->pGPO, 1);
 		h->state = stRESET;
 		L6474_HelperUnlock(h);
 		return val;
@@ -637,7 +668,7 @@ int L6474_Initialize(L6474_Handle_t h, L6474_BaseParameter_t* p)
 
 	if ( ( val = L6474_SetParamCommand(h, STEP_REG_TON_MIN, p->TimeOnMin) ) != 0 )
 	{
-		h->platform->reset(h->pGPO, 1);
+		h->platform.reset(h->pGPO, 1);
 		h->state = stRESET;
 		L6474_HelperUnlock(h);
 		return val;
@@ -645,7 +676,7 @@ int L6474_Initialize(L6474_Handle_t h, L6474_BaseParameter_t* p)
 
 	if ( ( val = L6474_SetParamCommand(h, STEP_REG_T_FAST, p->TFast) ) != 0 )
 	{
-		h->platform->reset(h->pGPO, 1);
+		h->platform.reset(h->pGPO, 1);
 		h->state = stRESET;
 		L6474_HelperUnlock(h);
 		return val;
@@ -653,7 +684,7 @@ int L6474_Initialize(L6474_Handle_t h, L6474_BaseParameter_t* p)
 
 	if ( ( val = L6474_SetStepMode(h, p->stepMode) ) != 0 )
 	{
-		h->platform->reset(h->pGPO, 1);
+		h->platform.reset(h->pGPO, 1);
 		h->state = stRESET;
 		L6474_HelperUnlock(h);
 		return val;
@@ -662,7 +693,7 @@ int L6474_Initialize(L6474_Handle_t h, L6474_BaseParameter_t* p)
 	// enable all alarms
 	if ( ( val = L6474_SetParamCommand(h, STEP_REG_ALARM_EN, STEP_MASK_ALARM_EN) ) != 0 )
 	{
-		h->platform->reset(h->pGPO, 1);
+		h->platform.reset(h->pGPO, 1);
 		h->state = stRESET;
 		L6474_HelperUnlock(h);
 		return val;
@@ -670,7 +701,7 @@ int L6474_Initialize(L6474_Handle_t h, L6474_BaseParameter_t* p)
 
 	if ( ( val = L6474_DisableCommand(h) ) != 0 )
 	{
-		h->platform->reset(h->pGPO, 1);
+		h->platform.reset(h->pGPO, 1);
 		h->state = stRESET;
 		L6474_HelperUnlock(h);
 		return val;
@@ -679,7 +710,7 @@ int L6474_Initialize(L6474_Handle_t h, L6474_BaseParameter_t* p)
 	// now it should not fail when reading status register!
 	if ( ( val = L6474_GetStatusCommand(h) ) < 0 )
 	{
-		h->platform->reset(h->pGPO, 1);
+		h->platform.reset(h->pGPO, 1);
 		h->state = stRESET;
 		L6474_HelperUnlock(h);
 		return val;
@@ -1233,7 +1264,7 @@ int L6474_StopMovement(L6474_Handle_t h)
 	}
 
 #if defined(LIBL6474_STEP_ASYNC) && ( LIBL6474_STEP_ASYNC == 1 )
-	if ( h->platform->cancelStep(h->pPWM) != 0 )
+	if ( h->platform.cancelStep(h->pPWM) != 0 )
 	{
 		L6474_HelperUnlock(h);
 		return errcINTERNAL;
@@ -1279,14 +1310,14 @@ int L6474_StepIncremental(L6474_Handle_t h, int steps )
 	int ret = 0;
 #if defined(LIBL6474_STEP_ASYNC) && ( LIBL6474_STEP_ASYNC == 1 )
 	h->pending = 1;
-	if ( ( ret = h->platform->stepAsync(h->pPWM, steps >= 0, ( ( steps < 0 ) ? -steps : steps ), L6474_HelperReleaseStep, h) ) != 0 )
+	if ( ( ret = h->platform.stepAsync(h->pPWM, steps >= 0, ( ( steps < 0 ) ? -steps : steps ), L6474_HelperReleaseStep, h) ) != 0 )
 	{
 		h->pending = 0;
 	}
 #else
 	h->pending = 1;
 	(void)L6474_HelperReleaseStep;
-	ret = h->platform->step(h->pPWM, ( ( steps < 0 ) ? -steps : steps ), steps);
+	ret = h->platform.step(h->pPWM,  steps >= 0, ( ( steps < 0 ) ? -steps : steps ) );
 	h->pending = 0;
 #endif
 

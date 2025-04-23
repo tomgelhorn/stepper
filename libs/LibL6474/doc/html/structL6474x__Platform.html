@@ -124,7 +124,7 @@ Data Fields</h2></td></tr>
 <tr class="separator:ae5551ae8e979685460c0183407287f18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The <a class="el" href="LibL6474_8h.html#abd8789d767c61f493658bc6c964d141a">L6474x_Platform_t</a> structure is used to encapsulate platform specific parameters and to provide environment specific functions in a generalized format. Theses functions are malloc and free or some PWM and GPIO abstractions The lock gurads and thread safety mechanisms are also abstracted by this structure </p>
+<div class="textblock"><p>The <a class="el" href="LibL6474_8h.html#abd8789d767c61f493658bc6c964d141a">L6474x_Platform_t</a> structure is used to encapsulate platform specific parameters and to provide environment specific functions in a generalized format. Theses functions are malloc and free or some PWM and GPIO abstractions The lock guards and thread safety mechanisms are also abstracted by this structure </p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="ae5551ae8e979685460c0183407287f18" name="ae5551ae8e979685460c0183407287f18"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae5551ae8e979685460c0183407287f18">&#9670;&#160;</a></span>cancelStep</h2>
@@ -137,7 +137,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>the cancelStep function is a synchronous blocking function which cancels the asynchronous prevously started step operation in case it has not been finished</p>
+<p>the cancelStep function is a synchronous blocking function which cancels the asynchronous previously started step operation in case it has not been finished</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">pPWM</td><td>optional user context pointer which has been passed by the L6474_CreateInstance call </td></tr>
@@ -158,7 +158,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>classic free function pointer which releases memory previously allocated by malloc. The user must provide this function as part of the platform abstraction. The minimal functionallity can be reached by providing a function which simply calles free in case The malloc abstraction function is a call to malloc.</p>
+<p>classic free function pointer which releases memory previously allocated by malloc. The user must provide this function as part of the platform abstraction. The minimal functionality can be reached by providing a function which simply calls free in case The malloc abstraction function is a call to malloc.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">pMem</td><td>pointer of the memory space which shall be freed</td></tr>
@@ -182,7 +182,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>classic malloc function pointer which returns null in case of an error or a memory void* pointer with the given size by the first argument. The user must provide this function as part of the platform abstraction. The minimal functionallity can be reached by providing a function which simply calles malloc.</p>
+<p>classic malloc function pointer which returns null in case of an error or a memory void* pointer with the given size by the first argument. The user must provide this function as part of the platform abstraction. The minimal functionality can be reached by providing a function which simply calls malloc.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>number of bytes requested by the memory allocation request</td></tr>
@@ -206,7 +206,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>the reset function is used to provide gpio access to the reset of the stepper driver chip</p>
+<p>the reset function is used to provide gpio access to the reset of the stepper driver chip. keep in mind that the chip has a reset not pin and so the ena signal must be inverted to set the correct reset level physically</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">pGPO</td><td>optional user context pointer which has been passed by the L6474_CreateInstance call </td></tr>
@@ -283,7 +283,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>the tranfer function is used to provide bus access to the stepper driver chip</p>
+<p>the transfer function is used to provide bus access to the stepper driver chip</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">pIO</td><td>optional user context pointer which has been passed by the L6474_CreateInstance call </td></tr>
@@ -308,7 +308,7 @@ Data Fields</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="structL6474x__Platform.html">L6474x_Platform</a></li>
-    <li class="footer">Generated on Mon Apr 14 2025 21:37:33 for LibL6474-C-Library by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Wed Apr 23 2025 08:37:59 for LibL6474-C-Library by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

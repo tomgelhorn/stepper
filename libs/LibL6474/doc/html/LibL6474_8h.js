@@ -67,6 +67,8 @@ var LibL6474_8h =
     ] ],
     [ "L6474_CreateInstance", "LibL6474_8h.html#a86f889135167d8b4e889c620d0bf9990", null ],
     [ "L6474_DestroyInstance", "LibL6474_8h.html#a50d6d2ccc49478ff0ee3f42a24a8f496", null ],
+    [ "L6474_EncodePhaseCurrent", "LibL6474_8h.html#ab7a90876abaf436e55942909df4c3430", null ],
+    [ "L6474_EncodePhaseCurrentParameter", "LibL6474_8h.html#aa09b09b606dae725681f47cb44208df0", null ],
     [ "L6474_GetAbsolutePosition", "LibL6474_8h.html#a28e38522674ae36aadb4c880eae3a1e7", null ],
     [ "L6474_GetAlarmEnables", "LibL6474_8h.html#a4b5bfb89269e877f95fa6c003e685f71", null ],
     [ "L6474_GetElectricalPosition", "LibL6474_8h.html#a76f2ad47b2c1b923186a3881e5cc97ba", null ],

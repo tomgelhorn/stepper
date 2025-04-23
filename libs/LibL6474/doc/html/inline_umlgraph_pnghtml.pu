@@ -36,8 +36,14 @@ Library ->> platform_step_function : Requests generating pulses async
   end
 @enduml
 @startuml inline_umlgraph_11.png
-Library -> platform_transfer_function : Requests read and write simultanously
-platform_transfer_function -> spi_driver : rx + tx
-platform_transfer_function <- spi_driver
+Library -> platform_transfer_function : Requests read and write simultaneously
+loop num of bytes
+  platform_transfer_function -> gpio_driver : CS low
+  platform_transfer_function <- gpio_driver
+  platform_transfer_function -> spi_driver : 1 byte rx + tx
+  platform_transfer_function <- spi_driver
+  platform_transfer_function -> gpio_driver : CS high
+  platform_transfer_function <- gpio_driver
+end
 Library <- platform_transfer_function
 @enduml

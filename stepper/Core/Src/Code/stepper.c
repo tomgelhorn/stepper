@@ -100,10 +100,10 @@ static int reset(StepperContext* stepper_ctx){
 	int result = 0;
 
 	result |= L6474_ResetStandBy(stepper_ctx->h);
-
 	result |= L6474_Initialize(stepper_ctx->h, &param);
 
 	result |= L6474_SetPowerOutputs(stepper_ctx->h, 0);
+
 
 	stepper_ctx->is_powered = 0;
 	stepper_ctx->is_referenced = 0;
@@ -165,6 +165,15 @@ static int move(StepperContext* stepper_ctx, int steps) {
 	return L6474_StepIncremental(stepper_ctx->h, steps);
 }
 
+static int initialize(StepperContext* stepper_ctx) {
+	reset(stepper_ctx);
+	stepper_ctx->is_powered = 1;
+	stepper_ctx->is_referenced = 1;
+	stepper_ctx->position = 0;
+
+	return L6474_SetPowerOutputs(stepper_ctx->h, 1);
+}
+
 static int stepperConsoleFunction(int argc, char** argv, void* ctx) {
 	StepperContext* stepper_ctx = (StepperContext*)ctx;
 	int result = 0;
@@ -188,6 +197,9 @@ static int stepperConsoleFunction(int argc, char** argv, void* ctx) {
 	}
 	else if (strcmp(argv[0], "cancel") == 0) {
 		result = StepTimerCancelAsync(NULL);
+	}
+	else if (strcmp(argv[0], "init") == 0){
+		result = initialize(stepper_ctx);
 	}
 	else {
 		printf("Invalid command\r\n");

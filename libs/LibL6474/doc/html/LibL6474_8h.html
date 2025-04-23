@@ -251,6 +251,10 @@ Functions</h2></td></tr>
 <tr class="separator:a9104da6893519c5eb0b33d56778fee2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09a265e08fc1c8e4ec0c1c40ede3aa41" id="r_a09a265e08fc1c8e4ec0c1c40ede3aa41"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a09a265e08fc1c8e4ec0c1c40ede3aa41">L6474_SetBaseParameter</a> (<a class="el" href="structL6474__BaseParameter__t.html">L6474_BaseParameter_t</a> *p)</td></tr>
 <tr class="separator:a09a265e08fc1c8e4ec0c1c40ede3aa41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7a90876abaf436e55942909df4c3430" id="r_ab7a90876abaf436e55942909df4c3430"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab7a90876abaf436e55942909df4c3430">L6474_EncodePhaseCurrent</a> (float mA)</td></tr>
+<tr class="separator:ab7a90876abaf436e55942909df4c3430"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa09b09b606dae725681f47cb44208df0" id="r_aa09b09b606dae725681f47cb44208df0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa09b09b606dae725681f47cb44208df0">L6474_EncodePhaseCurrentParameter</a> (<a class="el" href="structL6474__BaseParameter__t.html">L6474_BaseParameter_t</a> *p, float mA)</td></tr>
+<tr class="separator:aa09b09b606dae725681f47cb44208df0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b7f8efa1a972e53487d5cdfc8282784" id="r_a7b7f8efa1a972e53487d5cdfc8282784"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b7f8efa1a972e53487d5cdfc8282784">L6474_Initialize</a> (<a class="el" href="#a31a0c627342d952d0dddf3fbe0643cac">L6474_Handle_t</a> h, <a class="el" href="structL6474__BaseParameter__t.html">L6474_BaseParameter_t</a> *p)</td></tr>
 <tr class="separator:a7b7f8efa1a972e53487d5cdfc8282784"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b9c50f6d131a6acc788725354941bf1" id="r_a9b9c50f6d131a6acc788725354941bf1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9b9c50f6d131a6acc788725354941bf1">L6474_SetStepMode</a> (<a class="el" href="#a31a0c627342d952d0dddf3fbe0643cac">L6474_Handle_t</a> h, <a class="el" href="#a8cbcefa1aa04c85bacfbe16591593661">L6474x_StepMode_t</a> mode)</td></tr>
@@ -317,7 +321,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The <a class="el" href="#afe6a37602588d49b9ed5d1a308977d6a">L6474_Status_t</a> enum desribes the status register content of the stepper driver chip. It is reinterpreted so it can be naturally used in the code to get some of the error codes or state bits of the driver. </p>
+<p>The <a class="el" href="#afe6a37602588d49b9ed5d1a308977d6a">L6474_Status_t</a> enum describes the status register content of the stepper driver chip. It is reinterpreted so it can be naturally used in the code to get some of the error codes or state bits of the driver. </p>
 
 </div>
 </div>
@@ -332,7 +336,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The <a class="el" href="#a74d57e36e55d111079c64174e961f619">L6474x_Direction_t</a> enum desribes the direction of the driver and therefore the rotation of the stepper axis. </p>
+<p>The <a class="el" href="#a74d57e36e55d111079c64174e961f619">L6474x_Direction_t</a> enum describes the direction of the driver and therefore the rotation of the stepper axis. </p>
 
 </div>
 </div>
@@ -347,7 +351,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The <a class="el" href="#a309c3dbe6f05306b1a0a8201979595a8">L6474x_ErrorCode_t</a> enum desribes the possible error codes when using the API commands. Those error codes are mostly returned as return value by the API function which has been called previously </p>
+<p>The <a class="el" href="#a309c3dbe6f05306b1a0a8201979595a8">L6474x_ErrorCode_t</a> enum describes the possible error codes when using the API commands. Those error codes are mostly returned as return value by the API function which has been called previously </p>
 
 </div>
 </div>
@@ -362,7 +366,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The <a class="el" href="#ab1c87367ce432f3754d12ceb390077c8">L6474x_OCD_TH_t</a> enum desribes the possible overcurrent threshold values which can be set in the library and which are then taken into account by the stepper driver </p>
+<p>The <a class="el" href="#ab1c87367ce432f3754d12ceb390077c8">L6474x_OCD_TH_t</a> enum describes the possible overcurrent threshold values which can be set in the library and which are then taken into account by the stepper driver </p>
 
 </div>
 </div>
@@ -377,7 +381,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The <a class="el" href="#abd8789d767c61f493658bc6c964d141a">L6474x_Platform_t</a> structure is used to encapsulate platform specific parameters and to provide environment specific functions in a generalized format. Theses functions are malloc and free or some PWM and GPIO abstractions The lock gurads and thread safety mechanisms are also abstracted by this structure </p>
+<p>The <a class="el" href="#abd8789d767c61f493658bc6c964d141a">L6474x_Platform_t</a> structure is used to encapsulate platform specific parameters and to provide environment specific functions in a generalized format. Theses functions are malloc and free or some PWM and GPIO abstractions The lock guards and thread safety mechanisms are also abstracted by this structure </p>
 
 </div>
 </div>
@@ -424,7 +428,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The <a class="el" href="#a7dade050e47f1fea02eff190de585d22">L6474_Property_t</a> enum is a address representation for externally changable properties by the library via the API commands. In case the torque shall be changed, the user can call L6474_SetProperty with the L6474_PROP_TORQUE entry. Some of the properties can not be changed while the driver outputs are enabled and the library is in stENABLED state </p>
+<p>The <a class="el" href="#a7dade050e47f1fea02eff190de585d22">L6474_Property_t</a> enum is a address representation for externally changeable properties by the library via the API commands. In case the torque shall be changed, the user can call L6474_SetProperty with the L6474_PROP_TORQUE entry. Some of the properties can not be changed while the driver outputs are enabled and the library is in stENABLED state </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a7dade050e47f1fea02eff190de585d22abccdf1a94c5d1a194f423948fcc35f8a" name="a7dade050e47f1fea02eff190de585d22abccdf1a94c5d1a194f423948fcc35f8a"></a>L6474_PROP_TORQUE&#160;</td><td class="fielddoc"><p>L6474_PROP_TORQUE is the current setpoint value of each phase of the stepper which follows the torque directly </p>
 </td></tr>
@@ -453,7 +457,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The <a class="el" href="#a74d57e36e55d111079c64174e961f619">L6474x_Direction_t</a> enum desribes the direction of the driver and therefore the rotation of the stepper axis. </p>
+<p>The <a class="el" href="#a74d57e36e55d111079c64174e961f619">L6474x_Direction_t</a> enum describes the direction of the driver and therefore the rotation of the stepper axis. </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aaae3fcfa5e86dceb09b3befb997241a1a9b2b3de6fba4086254d01d9c190f001c" name="aaae3fcfa5e86dceb09b3befb997241a1a9b2b3de6fba4086254d01d9c190f001c"></a>dirFOREWARD&#160;</td><td class="fielddoc"><p>dirFOREWARD is interpreted as clock wise rotation </p>
 </td></tr>
@@ -474,7 +478,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The <a class="el" href="#a309c3dbe6f05306b1a0a8201979595a8">L6474x_ErrorCode_t</a> enum desribes the possible error codes when using the API commands. Those error codes are mostly returned as return value by the API function which has been called previously </p>
+<p>The <a class="el" href="#a309c3dbe6f05306b1a0a8201979595a8">L6474x_ErrorCode_t</a> enum describes the possible error codes when using the API commands. Those error codes are mostly returned as return value by the API function which has been called previously </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aafb11f316ec72214c03013555014eebba65d3c9089e9c458d114a5ff65a93cdd5" name="aafb11f316ec72214c03013555014eebba65d3c9089e9c458d114a5ff65a93cdd5"></a>errcNONE&#160;</td><td class="fielddoc"><p>errcNONE means no error and the operation was successful </p>
 </td></tr>
@@ -509,7 +513,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The <a class="el" href="#ab1c87367ce432f3754d12ceb390077c8">L6474x_OCD_TH_t</a> enum desribes the possible overcurrent threshold values which can be set in the library and which are then taken into account by the stepper driver </p>
+<p>The <a class="el" href="#ab1c87367ce432f3754d12ceb390077c8">L6474x_OCD_TH_t</a> enum describes the possible overcurrent threshold values which can be set in the library and which are then taken into account by the stepper driver </p>
 
 </div>
 </div>
@@ -615,6 +619,48 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>L6474_DestroyInstance is used to destroy a library instance which has been previously created by a call to L6474_CreateInstance</p>
+<p>The function returns errcNONE in case no error happens or any other error code from <a class="el" href="#a309c3dbe6f05306b1a0a8201979595a8">L6474x_ErrorCode_t</a> enum in case of an error </p>
+
+</div>
+</div>
+<a id="ab7a90876abaf436e55942909df4c3430" name="ab7a90876abaf436e55942909df4c3430"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7a90876abaf436e55942909df4c3430">&#9670;&#160;</a></span>L6474_EncodePhaseCurrent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char L6474_EncodePhaseCurrent </td>
+          <td>(</td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>mA</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Calling L6474_EncodePhaseCurrent converts the requested phase current into the register value which is required in the base parameter structure. The member for this value is named TorqueVal</p>
+<p>The function returns a register value which represents the given current value </p>
+
+</div>
+</div>
+<a id="aa09b09b606dae725681f47cb44208df0" name="aa09b09b606dae725681f47cb44208df0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa09b09b606dae725681f47cb44208df0">&#9670;&#160;</a></span>L6474_EncodePhaseCurrentParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int L6474_EncodePhaseCurrentParameter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structL6474__BaseParameter__t.html">L6474_BaseParameter_t</a> *</td>          <td class="paramname"><span class="paramname"><em>p</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>mA</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Calling L6474_EncodePhaseCurrentParameter converts the requested phase current into the register value which is required in the base parameter structure. The member for this value is named TorqueVal. This function directly inserts the converted value into the given base parameter structure.</p>
 <p>The function returns errcNONE in case no error happens or any other error code from <a class="el" href="#a309c3dbe6f05306b1a0a8201979595a8">L6474x_ErrorCode_t</a> enum in case of an error </p>
 
 </div>
@@ -1033,7 +1079,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>func L6474_SetPowerOutputs is used to enable or disable the driver ouptu stages. The library must not be in stRESET to perform this operation. The libraries state will be changed to stENABLED or stDISABLED depending on the ena parameter.</p>
+<p>func L6474_SetPowerOutputs is used to enable or disable the driver output stages. The library must not be in stRESET to perform this operation. The libraries state will be changed to stENABLED or stDISABLED depending on the ena parameter.</p>
 <p>The function returns errcNONE in case no error happens or any other error code from <a class="el" href="#a309c3dbe6f05306b1a0a8201979595a8">L6474x_ErrorCode_t</a> enum in case of an error.</p>
 <p>param h is required and can not be null. the handle can be created by calling L6474_CreateInstance before.</p>
 <p>param ena is required and is either 0 when disabling or 1 when enabling is requested </p>
@@ -1089,7 +1135,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>func L6474_SetStepMode is used to change the step mode and therefore the resolution. It is required to execute a new refernce run because the position value of the lib does not match the stepping mode anymore. The library must not be in stRESET to perform this operation.</p>
+<p>func L6474_SetStepMode is used to change the step mode and therefore the resolution. It is required to execute a new reference run because the position value of the lib does not match the stepping mode anymore. The library must not be in stRESET to perform this operation.</p>
 <p>The function returns errcNONE in case no error happens or any other error code from <a class="el" href="#a309c3dbe6f05306b1a0a8201979595a8">L6474x_ErrorCode_t</a> enum in case of an error.</p>
 <p>param h is required and can not be null. the handle can be created by calling L6474_CreateInstance before.</p>
 <p>param mode is required and is one out of <a class="el" href="#a8cbcefa1aa04c85bacfbe16591593661">L6474x_StepMode_t</a> </p>
@@ -1147,7 +1193,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_bfccd401955b95cf8c75461437045ac0.html">inc</a></li><li class="navelem"><a class="el" href="LibL6474_8h.html">LibL6474.h</a></li>
-    <li class="footer">Generated on Mon Apr 14 2025 21:37:33 for LibL6474-C-Library by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Wed Apr 23 2025 08:37:59 for LibL6474-C-Library by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

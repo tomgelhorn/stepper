@@ -91,7 +91,7 @@ typedef enum L6474x_StepMode
 } L6474x_StepMode_t;
 
 /*!
- * The L6474x_Direction_t enum desribes the direction of the driver and therefore the rotation of the stepper axis.
+ * The L6474x_Direction_t enum describes the direction of the driver and therefore the rotation of the stepper axis.
  */
 // --------------------------------------------------------------------------------------------------------------------
 typedef enum L6474x_Direction
@@ -109,7 +109,7 @@ typedef enum L6474x_Direction
 } L6474x_Direction_t;
 
 /*!
- * The L6474x_ErrorCode_t enum desribes the possible error codes when using the API commands. Those error codes are 
+ * The L6474x_ErrorCode_t enum describes the possible error codes when using the API commands. Those error codes are
  * mostly returned as return value by the API function which has been called previously
  */
 // --------------------------------------------------------------------------------------------------------------------
@@ -169,7 +169,7 @@ typedef enum L6474x_ErrorCode
 
 
 /*!
- * The L6474_Status_t enum desribes the status register content of the stepper driver chip. It is reinterpreted
+ * The L6474_Status_t enum describes the status register content of the stepper driver chip. It is reinterpreted
  * so it can be naturally used in the code to get some of the error codes or state bits of the driver.
  */
 // --------------------------------------------------------------------------------------------------------------------
@@ -217,14 +217,14 @@ typedef struct L6474_Status
 	unsigned char OCD        ;
 
 	/*!
-	 * movement is ingoing (pending)
+	 * movement is ongoing (pending)
 	 */
 	unsigned char ONGOING    ;
 } L6474_Status_t;
 
 
 /*!
- * The L6474x_OCD_TH_t enum desribes the possible overcurrent threshold values which can be set in the library
+ * The L6474x_OCD_TH_t enum describes the possible overcurrent threshold values which can be set in the library
  * and which are then taken into account by the stepper driver
  */
 // --------------------------------------------------------------------------------------------------------------------
@@ -261,7 +261,7 @@ typedef struct L6474_Handle* L6474_Handle_t;
 /*!
  * The L6474x_Platform_t structure is used to encapsulate platform specific parameters and to provide environment
  * specific functions in a generalized format. Theses functions are malloc and free or some PWM and GPIO abstractions
- * The lock gurads and thread safety mechanisms are also abstracted by this structure
+ * The lock guards and thread safety mechanisms are also abstracted by this structure
  */
 // --------------------------------------------------------------------------------------------------------------------
 typedef struct L6474x_Platform
@@ -270,7 +270,7 @@ typedef struct L6474x_Platform
 	/*!
 	 * classic malloc function pointer which returns null in case of an error or a memory void* pointer with the 
 	 * given size by the first argument. The user must provide this function as part of the platform abstraction.
-	 * The minimal functionallity can be reached by providing a function which simply calles malloc.
+	 * The minimal functionality can be reached by providing a function which simply calls malloc.
 	 *
      * @param[in] size number of bytes requested by the memory allocation request
 	 *
@@ -287,7 +287,7 @@ typedef struct L6474x_Platform
 	/*!
 	 * classic free function pointer which releases memory previously allocated by malloc. 
 	 * The user must provide this function as part of the platform abstraction.
-	 * The minimal functionallity can be reached by providing a function which simply calles free in case
+	 * The minimal functionality can be reached by providing a function which simply calls free in case
 	 * The malloc abstraction function is a call to malloc.
 	 * 
      * @param[in] pMem pointer of the memory space which shall be freed
@@ -303,7 +303,7 @@ typedef struct L6474x_Platform
 	void  (*free)      ( const void* const pMem                                                                       );
 
 	/*!
-	 * the tranfer function is used to provide bus access to the stepper driver chip
+	 * the transfer function is used to provide bus access to the stepper driver chip
 	 * 
      * @param[in,out] pIO    optional user context pointer which has been passed by the L6474_CreateInstance call
      * @param[out]    pRX    pointer to the receive data buffer
@@ -312,16 +312,24 @@ typedef struct L6474x_Platform
 	 *
 	 * The behavior is schematically as follows:
 	 * @startuml
-     * Library -> platform_transfer_function : Requests read and write simultanously
-	 * platform_transfer_function -> spi_driver : rx + tx
-	 * platform_transfer_function <- spi_driver
+     * Library -> platform_transfer_function : Requests read and write simultaneously
+     * loop num of bytes
+     *   platform_transfer_function -> gpio_driver : CS low
+	 *   platform_transfer_function <- gpio_driver
+	 *   platform_transfer_function -> spi_driver : 1 byte rx + tx
+	 *   platform_transfer_function <- spi_driver
+	 *   platform_transfer_function -> gpio_driver : CS high
+	 *   platform_transfer_function <- gpio_driver
+	 * end
      * Library <- platform_transfer_function
      * @enduml
 	 */
 	int   (*transfer)  ( void* pIO, char* pRX, const char* pTX, unsigned int length                                   );
 
 	/*!
-	 * the reset function is used to provide gpio access to the reset of the stepper driver chip
+	 * the reset function is used to provide gpio access to the reset of the stepper driver chip. keep in mind
+	 * that the chip has a reset not pin and so the ena signal must be inverted to set the correct reset level
+	 * physically
 	 * 
      * @param[in,out] pGPO   optional user context pointer which has been passed by the L6474_CreateInstance call
      * @param[in]     ena    output state to set without level inversion
@@ -407,7 +415,7 @@ typedef struct L6474x_Platform
 	int   (*stepAsync) ( void* pPWM, int dir, unsigned int numPulses, void (*doneClb)(L6474_Handle_t), L6474_Handle_t h );
 
 	/*!
-	 * the cancelStep function is a synchronous blocking function which cancels the asynchronous prevously started step
+	 * the cancelStep function is a synchronous blocking function which cancels the asynchronous previously started step
 	 * operation in case it has not been finished
 	 *
      * @param[in,out] pPWM      optional user context pointer which has been passed by the L6474_CreateInstance call
@@ -442,7 +450,7 @@ typedef struct L6474x_Platform
 } L6474x_Platform_t;
 
 /*!
- * The L6474_Property_t enum is a address representation for externally changable properties by the library via the
+ * The L6474_Property_t enum is a address representation for externally changeable properties by the library via the
  * API commands. In case the torque shall be changed, the user can call L6474_SetProperty with the L6474_PROP_TORQUE
  * entry. Some of the properties can not be changed while the driver outputs are enabled and the library is in stENABLED
  * state
@@ -569,6 +577,24 @@ int L6474_ResetStandBy(L6474_Handle_t h);
 int L6474_SetBaseParameter(L6474_BaseParameter_t* p);
 
 /*!
+ * Calling L6474_EncodePhaseCurrent converts the requested phase current into the register value which is
+ * required in the base parameter structure. The member for this value is named TorqueVal
+ *
+ * The function returns a register value which represents the given current value
+ */
+char L6474_EncodePhaseCurrent(float mA);
+
+/*!
+ * Calling L6474_EncodePhaseCurrentParameter converts the requested phase current into the register value which is
+ * required in the base parameter structure. The member for this value is named TorqueVal. This function directly inserts
+ * the converted value into the given base parameter structure.
+ *
+ * The function returns errcNONE in case no error happens or any other error code from L6474x_ErrorCode_t enum
+ * in case of an error
+ */
+int L6474_EncodePhaseCurrentParameter(L6474_BaseParameter_t* p, float mA);
+
+/*!
  * func L6474_Initialize is used to set all basic parameters and take the required steps to bring up the driver into an
  * idle state. It sets the library to stDISABLED in case no error happens.
  *
@@ -583,7 +609,7 @@ int L6474_Initialize(L6474_Handle_t h, L6474_BaseParameter_t* p);
 
 /*!
  * func L6474_SetStepMode is used to change the step mode and therefore the resolution. It is required to execute
- * a new refernce run because the position value of the lib does not match the stepping mode anymore. The library must not be
+ * a new reference run because the position value of the lib does not match the stepping mode anymore. The library must not be
  * in stRESET to perform this operation.
  *
  * The function returns errcNONE in case no error happens or any other error code from L6474x_ErrorCode_t enum
@@ -609,7 +635,7 @@ int L6474_SetStepMode(L6474_Handle_t h, L6474x_StepMode_t mode);
 int L6474_GetStepMode(L6474_Handle_t h, L6474x_StepMode_t* mode);
 
 /*!
- * func L6474_SetPowerOutputs is used to enable or disable the driver ouptu stages. The library must not be
+ * func L6474_SetPowerOutputs is used to enable or disable the driver output stages. The library must not be
  * in stRESET to perform this operation. The libraries state will be changed to stENABLED or stDISABLED depending
  * on the ena parameter.
  *
@@ -829,7 +855,7 @@ int L6474_SetAlarmEnables(L6474_Handle_t h, int bits);
  * \mainpage Stepper Library Lib6474
  * \section intro_sec Introduction
  *
- * The following code documentation is a set of tipps and diagramms as well as function and structure descriptions
+ * The following code documentation is a set of tips and diagrams as well as function and structure descriptions
  * which help when using the library. It is used to increase the implementation speed. Some examples are attached
  * in this documentation as well
  *
@@ -844,7 +870,7 @@ int L6474_SetAlarmEnables(L6474_Handle_t h, int bits);
  * which requires additional abstraction functions
  *
  * LIBL6474_DISABLE_OCD:
- * Should only be used for debugging purpopses and not for productive code!
+ * Should only be used for debugging purposes and not for productive code!
  * This DEFINE is used to disable the overcurrent detection feature in the library and the stepper driver
  * 
  * LIBL6474_HAS_FLAG:
@@ -854,7 +880,7 @@ int L6474_SetAlarmEnables(L6474_Handle_t h, int bits);
  * \section state_sec State diagram 
  * The following state diagram shows the internal state machine handling which follows or represents the
  * state of the stepper driver chip. The fault conditions are not depicted in the diagram but in all regular
- * cases the error hendling is done by resetting and reinitialization of the stepper driver by the library.
+ * cases the error handling is done by resetting and reinitialization of the stepper driver by the library.
  * 
  * \dot
  * digraph G {
@@ -921,6 +947,7 @@ int L6474_SetAlarmEnables(L6474_Handle_t h, int bits);
  * 
  * // now create the handle
  * L6474_Handle_t h = L6474_CreateInstance(&p, null, null, null); 
+ *
  * \endcode
  * 
  * The following example shows a really simple instantiation and usage
@@ -955,6 +982,32 @@ int L6474_SetAlarmEnables(L6474_Handle_t h, int bits);
  * 
  * ...
  * 
+ * \endcode
+ *
+ * The following example shows how to change the phase current (max torque) of the stepper.
+ * This can be achieved by reinitializing the library or by changing the parameter by calling
+ * L6474_SetProperty;
+ *
+ * \code
+ *
+ * ...
+ *
+ * int result = 0;
+ * ...
+ *
+ * // first way: set the torque on initialization
+ * result |= L6474_ResetStandBy(h);
+ * result |= L6474_EncodePhaseCurrentParameter(&param, 1200.0f);
+ * result |= L6474_Initialize(h, &param);
+ *
+ * ...
+ *
+ * // second way: set the torque after initialization
+ * char torqueval = L6474_EncodePhaseCurrent(1500.0f);
+ * result |= L6474_SetProperty(h, L6474_PROP_TORQUE, torqueval);
+ *
+ * ...
+ *
  * \endcode
  */
  

@@ -424,6 +424,10 @@ static int&#160;</td><td class="memItemRight" valign="bottom"><b>L6474_DisableCo
 <tr class="separator:a9104da6893519c5eb0b33d56778fee2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09a265e08fc1c8e4ec0c1c40ede3aa41" id="r_a09a265e08fc1c8e4ec0c1c40ede3aa41"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a09a265e08fc1c8e4ec0c1c40ede3aa41">L6474_SetBaseParameter</a> (<a class="el" href="structL6474__BaseParameter__t.html">L6474_BaseParameter_t</a> *p)</td></tr>
 <tr class="separator:a09a265e08fc1c8e4ec0c1c40ede3aa41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7a90876abaf436e55942909df4c3430" id="r_ab7a90876abaf436e55942909df4c3430"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab7a90876abaf436e55942909df4c3430">L6474_EncodePhaseCurrent</a> (float mA)</td></tr>
+<tr class="separator:ab7a90876abaf436e55942909df4c3430"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa09b09b606dae725681f47cb44208df0" id="r_aa09b09b606dae725681f47cb44208df0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa09b09b606dae725681f47cb44208df0">L6474_EncodePhaseCurrentParameter</a> (<a class="el" href="structL6474__BaseParameter__t.html">L6474_BaseParameter_t</a> *p, float mA)</td></tr>
+<tr class="separator:aa09b09b606dae725681f47cb44208df0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b7f8efa1a972e53487d5cdfc8282784" id="r_a7b7f8efa1a972e53487d5cdfc8282784"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b7f8efa1a972e53487d5cdfc8282784">L6474_Initialize</a> (<a class="el" href="LibL6474_8h.html#a31a0c627342d952d0dddf3fbe0643cac">L6474_Handle_t</a> h, <a class="el" href="structL6474__BaseParameter__t.html">L6474_BaseParameter_t</a> *p)</td></tr>
 <tr class="separator:a7b7f8efa1a972e53487d5cdfc8282784"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0c018c06758c809898408d249b3723b3" id="r_a0c018c06758c809898408d249b3723b3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0c018c06758c809898408d249b3723b3">L6474_IsMoving</a> (<a class="el" href="LibL6474_8h.html#a31a0c627342d952d0dddf3fbe0643cac">L6474_Handle_t</a> h, int *moving)</td></tr>
@@ -536,6 +540,48 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>L6474_DestroyInstance is used to destroy a library instance which has been previously created by a call to L6474_CreateInstance</p>
+<p>The function returns errcNONE in case no error happens or any other error code from <a class="el" href="LibL6474_8h.html#a309c3dbe6f05306b1a0a8201979595a8">L6474x_ErrorCode_t</a> enum in case of an error </p>
+
+</div>
+</div>
+<a id="ab7a90876abaf436e55942909df4c3430" name="ab7a90876abaf436e55942909df4c3430"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7a90876abaf436e55942909df4c3430">&#9670;&#160;</a></span>L6474_EncodePhaseCurrent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char L6474_EncodePhaseCurrent </td>
+          <td>(</td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>mA</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Calling L6474_EncodePhaseCurrent converts the requested phase current into the register value which is required in the base parameter structure. The member for this value is named TorqueVal</p>
+<p>The function returns a register value which represents the given current value </p>
+
+</div>
+</div>
+<a id="aa09b09b606dae725681f47cb44208df0" name="aa09b09b606dae725681f47cb44208df0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa09b09b606dae725681f47cb44208df0">&#9670;&#160;</a></span>L6474_EncodePhaseCurrentParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int L6474_EncodePhaseCurrentParameter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structL6474__BaseParameter__t.html">L6474_BaseParameter_t</a> *</td>          <td class="paramname"><span class="paramname"><em>p</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>mA</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Calling L6474_EncodePhaseCurrentParameter converts the requested phase current into the register value which is required in the base parameter structure. The member for this value is named TorqueVal. This function directly inserts the converted value into the given base parameter structure.</p>
 <p>The function returns errcNONE in case no error happens or any other error code from <a class="el" href="LibL6474_8h.html#a309c3dbe6f05306b1a0a8201979595a8">L6474x_ErrorCode_t</a> enum in case of an error </p>
 
 </div>
@@ -954,7 +1000,7 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>func L6474_SetPowerOutputs is used to enable or disable the driver ouptu stages. The library must not be in stRESET to perform this operation. The libraries state will be changed to stENABLED or stDISABLED depending on the ena parameter.</p>
+<p>func L6474_SetPowerOutputs is used to enable or disable the driver output stages. The library must not be in stRESET to perform this operation. The libraries state will be changed to stENABLED or stDISABLED depending on the ena parameter.</p>
 <p>The function returns errcNONE in case no error happens or any other error code from <a class="el" href="LibL6474_8h.html#a309c3dbe6f05306b1a0a8201979595a8">L6474x_ErrorCode_t</a> enum in case of an error.</p>
 <p>param h is required and can not be null. the handle can be created by calling L6474_CreateInstance before.</p>
 <p>param ena is required and is either 0 when disabling or 1 when enabling is requested </p>
@@ -1010,7 +1056,7 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>func L6474_SetStepMode is used to change the step mode and therefore the resolution. It is required to execute a new refernce run because the position value of the lib does not match the stepping mode anymore. The library must not be in stRESET to perform this operation.</p>
+<p>func L6474_SetStepMode is used to change the step mode and therefore the resolution. It is required to execute a new reference run because the position value of the lib does not match the stepping mode anymore. The library must not be in stRESET to perform this operation.</p>
 <p>The function returns errcNONE in case no error happens or any other error code from <a class="el" href="LibL6474_8h.html#a309c3dbe6f05306b1a0a8201979595a8">L6474x_ErrorCode_t</a> enum in case of an error.</p>
 <p>param h is required and can not be null. the handle can be created by calling L6474_CreateInstance before.</p>
 <p>param mode is required and is one out of <a class="el" href="LibL6474_8h.html#a8cbcefa1aa04c85bacfbe16591593661">L6474x_StepMode_t</a> </p>
@@ -1106,7 +1152,7 @@ Variables</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="LibL6474x_8c.html">LibL6474x.c</a></li>
-    <li class="footer">Generated on Mon Apr 14 2025 21:37:33 for LibL6474-C-Library by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Wed Apr 23 2025 08:37:59 for LibL6474-C-Library by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>
