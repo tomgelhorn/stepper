@@ -6,6 +6,7 @@
 #include "string.h"
 #include "LibL6474Config.h"
 #include "stm32f7xx_hal_spi.h"
+#include "stm32f7xx_hal_tim.h"
 #include "FreeRTOS.h"
 #include "task.h"
 
@@ -72,9 +73,9 @@ static void StepTimer( void* pPWM, int dir, unsigned int numPulses )
 {
 	HAL_GPIO_WritePin(STEP_DIR_GPIO_Port, STEP_DIR_Pin, !!dir);
 	for (int i = 0; i < numPulses; i++) {
-		HAL_GPIO_WritePin(STEP_PULSE_GPIO_Port, STEP_PULSE_Pin, 1);
-		HAL_Delay(1);
-		HAL_GPIO_WritePin(STEP_PULSE_GPIO_Port, STEP_PULSE_Pin, 0);
+//		HAL_GPIO_WritePin(STEP_PULSE_GPIO_Port, STEP_PULSE_Pin, 1);
+//		HAL_Delay(1);
+//		HAL_GPIO_WritePin(STEP_PULSE_GPIO_Port, STEP_PULSE_Pin, 0);
 		HAL_Delay(1);
 	}
 }
@@ -224,9 +225,9 @@ static void StepTask(void* p){
 		if (stepper_ctx.is_canceled) {
 			break;
 		}
-		HAL_GPIO_WritePin(STEP_PULSE_GPIO_Port, STEP_PULSE_Pin, 1);
-		HAL_Delay(1);
-		HAL_GPIO_WritePin(STEP_PULSE_GPIO_Port, STEP_PULSE_Pin, 0);
+//		HAL_GPIO_WritePin(STEP_PULSE_GPIO_Port, STEP_PULSE_Pin, 1);
+//		HAL_Delay(1);
+//		HAL_GPIO_WritePin(STEP_PULSE_GPIO_Port, STEP_PULSE_Pin, 0);
 		HAL_Delay(1);
 	}
 
@@ -239,15 +240,27 @@ static void StepTask(void* p){
 }
 
 static int StepAsyncTimer(void *pPWM, int dir, unsigned int numPulses, void (*doneClb)(L6474_Handle_t),L6474_Handle_t h){
-	StepTaskParams* params = (StepTaskParams*)pvPortMalloc(sizeof(StepTaskParams));
-	params->pPWM = pPWM;
-	params->dir = dir;
-	params->numPulses = numPulses;
-	params->doneClb = doneClb;
-	params->h = h;
+//	StepTaskParams* params = (StepTaskParams*)pvPortMalloc(sizeof(StepTaskParams));
+//	params->pPWM = pPWM;
+//	params->dir = dir;
+//	params->numPulses = numPulses;
+//	params->doneClb = doneClb;
+//	params->h = h;
+//
+//	stepper_ctx.is_canceled = 0;
+//	xTaskCreate(StepTask, "stepper", 10000, params, configMAX_PRIORITIES-5, &(stepper_ctx.step_task));
 
-	stepper_ctx.is_canceled = 0;
-	xTaskCreate(StepTask, "stepper", 10000, params, configMAX_PRIORITIES-5, &(stepper_ctx.step_task));
+	TIM_HandleTypeDef* tim1_handle = (TIM_HandleTypeDef*)pPWM;
+
+
+
+	HAL_TIM_OnePulse_Init(tim1_handle, TIM_CHANNEL_1);
+	HAL_TIM_OnePulse_Stop_IT(tim1_handle, TIM_CHANNEL_1);
+	__HAL_TIM_SET_AUTORELOAD(tim1_handle, 6969);
+	HAL_TIM_GenerateEvent(tim1_handle, TIM_EVENTSOURCE_UPDATE);
+	HAL_TIM_OnePulse_Start_IT(tim1_handle, TIM_CHANNEL_1);
+	__HAL_TIM_ENABLE(tim1_handle);
+
 	return 0;
 }
 
@@ -259,9 +272,10 @@ static int StepTimerCancelAsync(void* pPWM)
 	return 0;
 }
 
-void init_stepper(ConsoleHandle_t console_handle, SPI_HandleTypeDef* hspi1){
+void init_stepper(ConsoleHandle_t console_handle, SPI_HandleTypeDef* hspi1, TIM_HandleTypeDef* tim1_handle, TIM_HandleTypeDef* tim4_handle){
 
 	HAL_GPIO_WritePin(STEP_SPI_CS_GPIO_Port, STEP_SPI_CS_Pin, 1);
+	HAL_TIM_PWM_Start_IT(tim4_handle, TIM_CHANNEL_4);
 
 
 	// pass all function pointers required by the stepper library
@@ -278,7 +292,7 @@ void init_stepper(ConsoleHandle_t console_handle, SPI_HandleTypeDef* hspi1){
 
 
 	// now create the handle
-	stepper_ctx.h = L6474_CreateInstance(&p, hspi1, NULL, NULL);
+	stepper_ctx.h = L6474_CreateInstance(&p, hspi1, NULL, tim1_handle);
 	//reset(h);
 
 

@@ -51,7 +51,7 @@ static int CapabilityFunc( int argc, char** argv, void* ctx )
 
 
 
-void init(TIM_HandleTypeDef tim_handle, SPI_HandleTypeDef* hspi1) {
+void init(TIM_HandleTypeDef tim_handle, SPI_HandleTypeDef* hspi1, TIM_HandleTypeDef* tim1_handle, TIM_HandleTypeDef* tim4_handle) {
 	  // set up console
 	  ConsoleHandle_t console_handle = CONSOLE_CreateInstance( 4*configMINIMAL_STACK_SIZE, configMAX_PRIORITIES - 5  );
 
@@ -59,5 +59,5 @@ void init(TIM_HandleTypeDef tim_handle, SPI_HandleTypeDef* hspi1) {
 
 
 	  init_spindle(console_handle, tim_handle);
-	  init_stepper(console_handle, hspi1);
+	  init_stepper(console_handle, hspi1, tim1_handle, tim4_handle);
 }
