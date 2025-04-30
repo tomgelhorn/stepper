@@ -45,7 +45,7 @@ static int StepDriverSpiTransfer( void* pIO, char* pRX, const char* pTX, unsigne
 	{
 		HAL_GPIO_WritePin(STEP_SPI_CS_GPIO_Port, STEP_SPI_CS_Pin, 0);
 
-		status |= HAL_SPI_TransmitReceive(pIO, pTX + i, pRX + i, 1, 10000);
+		status |= HAL_SPI_TransmitReceive(pIO, (uint8_t*)pTX + i, (uint8_t*)pRX + i, 1, 10000);
 
 		HAL_GPIO_WritePin(STEP_SPI_CS_GPIO_Port, STEP_SPI_CS_Pin, 1);
 
@@ -61,6 +61,7 @@ static int StepDriverSpiTransfer( void* pIO, char* pRX, const char* pTX, unsigne
 
 static void StepDriverReset(void* pGPO, int ena)
 {
+	(void) pGPO;
 	HAL_GPIO_WritePin(STEP_RSTN_GPIO_Port, STEP_RSTN_Pin, !ena);
 
 	return;
@@ -126,7 +127,7 @@ static int powerena(StepperContext* stepper_ctx, int argc, char** argv) {
 }
 
 static int reference(StepperContext* stepper_ctx, int argc, char** argv) {
-	stepper_ctx->is_referenced = 1; //hehe
+	stepper_ctx->is_referenced = 1;
 	return 0;
 }
 
