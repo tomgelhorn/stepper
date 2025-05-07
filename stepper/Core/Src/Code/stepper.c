@@ -250,6 +250,12 @@ static int stepperConsoleFunction(int argc, char** argv, void* ctx) {
 	else if (strcmp(argv[0], "init") == 0){
 		result = initialize(stepper_ctx);
 	}
+	else if (strcmp(argv[0], "position") == 0){
+		printf(stepper_ctx->position);
+	}
+	else if (strcmp(argv[0], "status") == 0){
+		printf("Power: %d, Referenced: %d, Running: %d\r\n", stepper_ctx->is_powered, stepper_ctx->is_referenced, stepper_ctx->is_running);
+	}
 	else {
 		printf("Invalid command\r\n");
 		return -1;

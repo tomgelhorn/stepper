@@ -24,11 +24,11 @@ static int CapabilityFunc( int argc, char** argv, void* ctx )
 		1, // has stepper move relative
 		0, // has stepper move speed
 		0, // has stepper move async
-		0, // has stepper status
-		0, // has stepper refrun
-		0, // has stepper refrun timeout
-		0, // has stepper refrun skip
-		0, // has stepper refrun stay enabled
+		1, // has stepper status
+		1, // has stepper refrun
+		1, // has stepper refrun timeout
+		1, // has stepper refrun skip
+		1, // has stepper refrun stay enabled
 		1, // has stepper reset
 		0, // has stepper position
 		1, // has stepper config
