@@ -30,6 +30,7 @@ typedef struct {
 } StepperContext;
 
 static int StepTimerCancelAsync(void* pPWM);
+void set_speed(StepperContext* stepper_ctx, int steps_per_second);
 
 static void* StepLibraryMalloc( unsigned int size )
 {
@@ -140,7 +141,7 @@ static int reference(StepperContext* stepper_ctx, int argc, char** argv) {
 		if (strcmp(argv[1], "-s") == 0) {
 			//Referenzfahrt überspringen
 			stepper_ctx->is_referenced = 1;
-			stepper_ctx->position = 0;
+			stepper_ctx->position_steps = 0;
 			return result;
 		}
 		else if (strcmp(argv[1], "-e") == 0) {
@@ -166,6 +167,7 @@ static int reference(StepperContext* stepper_ctx, int argc, char** argv) {
 	result |= L6474_SetPowerOutputs(stepper_ctx->h, 1);
 	if(HAL_GPIO_ReadPin(REFERENCE_MARK_GPIO_Port, REFERENCE_MARK_Pin) == GPIO_PIN_RESET) {
 		// already at reference
+		set_speed(stepper_ctx, 500);
 		L6474_StepIncremental(stepper_ctx->h, 100000000);
 		while(HAL_GPIO_ReadPin(REFERENCE_MARK_GPIO_Port, REFERENCE_MARK_Pin) == GPIO_PIN_RESET){
 			if (timeout_ms > 0 && HAL_GetTick() - start_time > timeout_ms) {
@@ -187,7 +189,7 @@ static int reference(StepperContext* stepper_ctx, int argc, char** argv) {
 	StepTimerCancelAsync(NULL);
 
 	stepper_ctx->is_referenced = 1;
-	stepper_ctx->position = 0;
+	stepper_ctx->position_steps = 0;
 	result |= L6474_SetPowerOutputs(stepper_ctx->h, poweroutput);
 	return result;
 
@@ -207,7 +209,6 @@ static int config(StepperContext* stepper_ctx, int argc, char** argv) {
 		return -1;
 	}
 }
-
 void set_speed(StepperContext* stepper_ctx, int steps_per_second) {
 	int clk = HAL_RCC_GetHCLKFreq();
 
@@ -336,7 +337,7 @@ static int stepperConsoleFunction(int argc, char** argv, void* ctx) {
 		result = initialize(stepper_ctx);
 	}
 	else if (strcmp(argv[0], "position") == 0){
-		printf(stepper_ctx->position);
+		printf("Current position: %d\n\r", (stepper_ctx->position_steps * MM_PER_TURN) / (STEPS_PER_TURN * RESOLUTION));
 	}
 	else if (strcmp(argv[0], "status") == 0){
 		printf("Power: %d, Referenced: %d, Running: %d\r\n", stepper_ctx->is_powered, stepper_ctx->is_referenced, stepper_ctx->is_running);
