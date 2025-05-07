@@ -87,7 +87,7 @@ static int reset(StepperContext* stepper_ctx){
 	param.OcdTh = ocdth6000mA;
 	param.TimeOnMin = 0x29;
 	param.TimeOffMin = 0x29;
-	param.TorqueVal = 0x11;
+	param.TorqueVal = 0x29;
 	param.TFast = 0x19;
 
 	int result = 0;
@@ -127,24 +127,64 @@ static int powerena(StepperContext* stepper_ctx, int argc, char** argv) {
 }
 
 static int reference(StepperContext* stepper_ctx, int argc, char** argv) {
-	(void) argc;
-	(void) argv;
 	int result = 0;
+	int poweroutput = 0;
+	uint32_t timeout_ms = 0;
+	if (argc == 2) {
+		if (strcmp(argv[1], "-s") == 0) {
+			//Referenzfahrt überspringen
+			stepper_ctx->is_referenced = 1;
+			stepper_ctx->position = 0;
+			return result;
+		}
+		else if (strcmp(argv[1], "-e") == 0) {
+			// Power aktiv lassen
+			poweroutput = 1;
+		}
+		else {
+			printf("Invalid argument for reference\r\n");
+			return -1;
+		}
+	}
+	else if(argc == 3){
+		if (strcmp(argv[1], "-t") == 0) {
+			timeout_ms = atoi(argv[2]) * 1000;
+		}
+		else {
+			printf("Invalid argument for reference\r\n");
+			return -1;
+		}
+	}
+
+	const uint32_t start_time = HAL_GetTick();
 	result |= L6474_SetPowerOutputs(stepper_ctx->h, 1);
-	if(HAL_GPIO_ReadPin(LIMIT_SWITCH_GPIO_Port, LIMIT_SWITCH_Pin) == GPIO_PIN_SET) {
+	if(HAL_GPIO_ReadPin(REFERENCE_MARK_GPIO_Port, REFERENCE_MARK_Pin) == GPIO_PIN_RESET) {
 		// already at reference
 		L6474_StepIncremental(stepper_ctx->h, 100000000);
-		while(HAL_GPIO_ReadPin(LIMIT_SWITCH_GPIO_Port, LIMIT_SWITCH_Pin) != GPIO_PIN_RESET);
+		while(HAL_GPIO_ReadPin(REFERENCE_MARK_GPIO_Port, REFERENCE_MARK_Pin) == GPIO_PIN_RESET){
+			if (timeout_ms > 0 && HAL_GetTick() - start_time > timeout_ms) {
+				StepTimerCancelAsync(NULL);
+				printf("Timeout while waiting for reference switch\r\n");
+				return -1;
+			}
+		}
 		StepTimerCancelAsync(NULL);
 	}
 	L6474_StepIncremental(stepper_ctx->h, -1000000000);
-	while(HAL_GPIO_ReadPin(LIMIT_SWITCH_GPIO_Port, LIMIT_SWITCH_Pin) != GPIO_PIN_SET);
+	while(HAL_GPIO_ReadPin(REFERENCE_MARK_GPIO_Port, REFERENCE_MARK_Pin) != GPIO_PIN_RESET){
+		if (timeout_ms > 0 && HAL_GetTick() - start_time > timeout_ms) {
+			StepTimerCancelAsync(NULL);
+			printf("Timeout while waiting for reference switch\r\n");
+			return -1;
+		}
+	}
 	StepTimerCancelAsync(NULL);
 
 	stepper_ctx->is_referenced = 1;
 	stepper_ctx->position = 0;
-	result |= L6474_SetPowerOutputs(stepper_ctx->h, 0);
+	result |= L6474_SetPowerOutputs(stepper_ctx->h, poweroutput);
 	return result;
+
 }
 
 
