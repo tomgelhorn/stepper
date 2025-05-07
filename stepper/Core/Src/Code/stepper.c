@@ -10,17 +10,23 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#define STEPS_PER_TURN 200
+#define RESOLUTION 16
+#define MM_PER_TURN 4
+
 typedef struct {
 	L6474_Handle_t h;
 	int is_powered;
 	int is_referenced;
 	int is_running;
 
-	int position;
+	int direction;
+	int position_steps;
 
 	void (*done_callback)(L6474_Handle_t);
 	int remaining_pulses;
 	TIM_HandleTypeDef* htim1_handle;
+	TIM_HandleTypeDef* htim4_handle;
 } StepperContext;
 
 static int StepTimerCancelAsync(void* pPWM);
@@ -146,7 +152,21 @@ static int config(StepperContext* stepper_ctx, int argc, char** argv) {
 	}
 }
 
-static int move(StepperContext* stepper_ctx, int steps) {
+void set_speed(StepperContext* stepper_ctx, int steps_per_second) {
+	int clk = HAL_RCC_GetHCLKFreq();
+
+	int quotient = clk / (steps_per_second * 2); // magic 2
+
+	int i = 0;
+
+	while ((quotient / (i + 1)) > 65535) i++;
+
+	__HAL_TIM_SET_PRESCALER(stepper_ctx->htim4_handle, i);
+	__HAL_TIM_SET_AUTORELOAD(stepper_ctx->htim4_handle, (quotient / (i + 1)) - 1);
+	stepper_ctx->htim4_handle->Instance->CCR4 = stepper_ctx->htim4_handle->Instance->ARR / 2;
+}
+
+static int move(StepperContext* stepper_ctx, int argc, char** argv) {
 	if (stepper_ctx->is_powered != 1) {
 		printf("Stepper not powered\r\n");
 		return -1;
@@ -155,14 +175,79 @@ static int move(StepperContext* stepper_ctx, int steps) {
 		printf("Stepper not referenced\r\n");
 		return -1;
 	}
-	return L6474_StepIncremental(stepper_ctx->h, steps);
+	if (argc < 2) {
+		printf("Invalid number of arguments\r\n");
+		return -1;
+	}
+
+	int position = atoi(argv[1]);
+	int speed = 1000;
+
+	int is_async = 0;
+	int is_relative = 0;
+
+	for (int i = 2; i < argc; ) {
+		// async
+		if (strcmp(argv[i], "-a") == 0) {
+			is_async = 1;
+			i++;
+		}
+
+		// relative
+		else if (strcmp(argv[i], "-r") == 0) {
+			is_relative = 1;
+			i++;
+		}
+
+		// speed
+		else if (strcmp(argv[i], "-s") == 0) {
+			if (i == argc - 1) {
+				printf("Invalid number of arguments\r\n");
+				return -1;
+			}
+
+			speed = atoi(argv[i + 1]);
+			i += 2;
+		}
+
+		else {
+			printf("Invalid Flag\r\n");
+			return -1;
+		}
+	}
+
+	int steps_per_second = (speed * STEPS_PER_TURN * RESOLUTION) / (60 * MM_PER_TURN);
+
+	if (steps_per_second < 1) {
+		printf("Speed too small\r\n");
+		return -1;
+	}
+
+	set_speed(stepper_ctx, steps_per_second);
+
+	int steps = (position * STEPS_PER_TURN * RESOLUTION) / MM_PER_TURN;
+
+	if (!is_relative) {
+		steps -= stepper_ctx->position_steps;
+	}
+
+	if (is_async) {
+		return L6474_StepIncremental(stepper_ctx->h, steps);
+	}
+	else {
+		int result = L6474_StepIncremental(stepper_ctx->h, steps);
+
+		while (stepper_ctx->is_running);
+
+		return result;
+	}
 }
 
 static int initialize(StepperContext* stepper_ctx) {
 	reset(stepper_ctx);
 	stepper_ctx->is_powered = 1;
 	stepper_ctx->is_referenced = 1;
-	stepper_ctx->position = 0;
+	stepper_ctx->position_steps = 0;
 
 	return L6474_SetPowerOutputs(stepper_ctx->h, 1);
 }
@@ -177,7 +262,7 @@ static int stepperConsoleFunction(int argc, char** argv, void* ctx) {
 	}
 	if (strcmp(argv[0], "move") == 0 )
 	{
-		result = move(stepper_ctx, atoi(argv[1]));
+		result = move(stepper_ctx, argc, argv);
 	}
 	else if (strcmp(argv[0], "reset") == 0) {
 		result = reset(stepper_ctx);
@@ -236,6 +321,9 @@ void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef* htim) {
 			stepper_ctx.done_callback(stepper_ctx.h);
 			stepper_ctx.is_running = 0;
 		}
+
+		//update position_steps
+		stepper_ctx.position_steps += stepper_ctx.direction * htim->Instance->ARR;
 	}
 }
 
@@ -244,10 +332,12 @@ static int StepAsyncTimer(void* pPWM, int dir, unsigned int numPulses, void (*do
 	(void)h;
 
 	stepper_ctx.is_running = 1;
+	stepper_ctx.direction = dir ? 1 : -1;
+	stepper_ctx.done_callback = doneClb;
 
 	HAL_GPIO_WritePin(STEP_DIR_GPIO_Port, STEP_DIR_Pin, !!dir);
 
-	stepper_ctx.done_callback = doneClb;
+
 
 	start_tim1(numPulses);
 
@@ -263,7 +353,8 @@ static int StepTimerCancelAsync(void* pPWM)
 	if (stepper_ctx.is_running) {
 		HAL_TIM_OnePulse_Stop_IT(stepper_ctx.htim1_handle, TIM_CHANNEL_1);
 		stepper_ctx.done_callback(stepper_ctx.h);
-		stepper_ctx.is_referenced = 0;
+
+		stepper_ctx.position_steps += stepper_ctx.direction * __HAL_TIM_GET_COUNTER(stepper_ctx.htim1_handle);
 	}
 
 	return 0;
@@ -271,7 +362,6 @@ static int StepTimerCancelAsync(void* pPWM)
 
 void init_stepper(ConsoleHandle_t console_handle, SPI_HandleTypeDef* hspi1, TIM_HandleTypeDef* tim1_handle, TIM_HandleTypeDef* tim4_handle){
 	HAL_GPIO_WritePin(STEP_SPI_CS_GPIO_Port, STEP_SPI_CS_Pin, 1);
-	tim4_handle->Instance->CCR4 = tim4_handle->Instance->ARR / 2;
 	HAL_TIM_PWM_Start(tim4_handle, TIM_CHANNEL_4);
 
 	p.malloc     = StepLibraryMalloc;
@@ -284,6 +374,7 @@ void init_stepper(ConsoleHandle_t console_handle, SPI_HandleTypeDef* hspi1, TIM_
 
 	stepper_ctx.h = L6474_CreateInstance(&p, hspi1, NULL, tim1_handle);
 	stepper_ctx.htim1_handle = tim1_handle;
+	stepper_ctx.htim4_handle = tim4_handle;
 
 	CONSOLE_RegisterCommand(console_handle, "stepper", "Stepper main Command", stepperConsoleFunction, &stepper_ctx);
 }
