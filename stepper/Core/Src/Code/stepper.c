@@ -20,9 +20,6 @@ typedef struct {
 	int is_referenced;
 	int is_running;
 
-	int direction;
-	int position_steps;
-
 	void (*done_callback)(L6474_Handle_t);
 	int remaining_pulses;
 	TIM_HandleTypeDef* htim1_handle;
@@ -94,7 +91,7 @@ static int reset(StepperContext* stepper_ctx){
 	param.OcdTh = ocdth6000mA;
 	param.TimeOnMin = 0x29;
 	param.TimeOffMin = 0x29;
-	param.TorqueVal = 0x29;
+	param.TorqueVal = 0x11;
 	param.TFast = 0x19;
 
 	int result = 0;
@@ -141,7 +138,7 @@ static int reference(StepperContext* stepper_ctx, int argc, char** argv) {
 		if (strcmp(argv[1], "-s") == 0) {
 			//Referenzfahrt überspringen
 			stepper_ctx->is_referenced = 1;
-			stepper_ctx->position_steps = 0;
+			L6474_SetAbsolutePosition(stepper_ctx->h, 0);
 			return result;
 		}
 		else if (strcmp(argv[1], "-e") == 0) {
@@ -189,10 +186,9 @@ static int reference(StepperContext* stepper_ctx, int argc, char** argv) {
 	StepTimerCancelAsync(NULL);
 
 	stepper_ctx->is_referenced = 1;
-	stepper_ctx->position_steps = 0;
+	L6474_SetAbsolutePosition(stepper_ctx->h, 0);
 	result |= L6474_SetPowerOutputs(stepper_ctx->h, poweroutput);
 	return result;
-
 }
 
 
@@ -285,7 +281,10 @@ static int move(StepperContext* stepper_ctx, int argc, char** argv) {
 	int steps = (position * STEPS_PER_TURN * RESOLUTION) / MM_PER_TURN;
 
 	if (!is_relative) {
-		steps -= stepper_ctx->position_steps;
+		int absolute_position;
+		L6474_GetAbsolutePosition(stepper_ctx->h, &absolute_position);
+
+		steps -= absolute_position;
 	}
 
 	if (is_async) {
@@ -304,7 +303,6 @@ static int initialize(StepperContext* stepper_ctx) {
 	reset(stepper_ctx);
 	stepper_ctx->is_powered = 1;
 	stepper_ctx->is_referenced = 1;
-	stepper_ctx->position_steps = 0;
 
 	return L6474_SetPowerOutputs(stepper_ctx->h, 1);
 }
@@ -337,7 +335,9 @@ static int stepperConsoleFunction(int argc, char** argv, void* ctx) {
 		result = initialize(stepper_ctx);
 	}
 	else if (strcmp(argv[0], "position") == 0){
-		printf("Current position: %d\n\r", (stepper_ctx->position_steps * MM_PER_TURN) / (STEPS_PER_TURN * RESOLUTION));
+		int position;
+		L6474_GetAbsolutePosition(stepper_ctx->h, &position);
+		printf("Current position: %d\n\r", (position * MM_PER_TURN) / (STEPS_PER_TURN * RESOLUTION));
 	}
 	else if (strcmp(argv[0], "status") == 0){
 		printf("Power: %d, Referenced: %d, Running: %d\r\n", stepper_ctx->is_powered, stepper_ctx->is_referenced, stepper_ctx->is_running);
@@ -384,9 +384,6 @@ void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef* htim) {
 			stepper_ctx.done_callback(stepper_ctx.h);
 			stepper_ctx.is_running = 0;
 		}
-
-		//update position_steps
-		stepper_ctx.position_steps += stepper_ctx.direction * htim->Instance->ARR;
 	}
 }
 
@@ -395,7 +392,6 @@ static int StepAsyncTimer(void* pPWM, int dir, unsigned int numPulses, void (*do
 	(void)h;
 
 	stepper_ctx.is_running = 1;
-	stepper_ctx.direction = dir ? 1 : -1;
 	stepper_ctx.done_callback = doneClb;
 
 	HAL_GPIO_WritePin(STEP_DIR_GPIO_Port, STEP_DIR_Pin, !!dir);
@@ -416,8 +412,6 @@ static int StepTimerCancelAsync(void* pPWM)
 	if (stepper_ctx.is_running) {
 		HAL_TIM_OnePulse_Stop_IT(stepper_ctx.htim1_handle, TIM_CHANNEL_1);
 		stepper_ctx.done_callback(stepper_ctx.h);
-
-		stepper_ctx.position_steps += stepper_ctx.direction * __HAL_TIM_GET_COUNTER(stepper_ctx.htim1_handle);
 	}
 
 	return 0;
