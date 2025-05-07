@@ -133,8 +133,24 @@ static int powerena(StepperContext* stepper_ctx, int argc, char** argv) {
 }
 
 static int reference(StepperContext* stepper_ctx, int argc, char** argv) {
+	(void) argc;
+	(void) argv;
+	int result = 0;
+	result |= L6474_SetPowerOutputs(stepper_ctx->h, 1);
+	if(HAL_GPIO_ReadPin(LIMIT_SWITCH_GPIO_Port, LIMIT_SWITCH_Pin) == GPIO_PIN_SET) {
+		// already at reference
+		L6474_StepIncremental(stepper_ctx->h, 100000000);
+		while(HAL_GPIO_ReadPin(LIMIT_SWITCH_GPIO_Port, LIMIT_SWITCH_Pin) != GPIO_PIN_RESET);
+		StepTimerCancelAsync(NULL);
+	}
+	L6474_StepIncremental(stepper_ctx->h, -1000000000);
+	while(HAL_GPIO_ReadPin(LIMIT_SWITCH_GPIO_Port, LIMIT_SWITCH_Pin) != GPIO_PIN_SET);
+	StepTimerCancelAsync(NULL);
+
 	stepper_ctx->is_referenced = 1;
-	return 0;
+	stepper_ctx->position = 0;
+	result |= L6474_SetPowerOutputs(stepper_ctx->h, 0);
+	return result;
 }
 
 
