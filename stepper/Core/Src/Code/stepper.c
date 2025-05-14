@@ -99,7 +99,7 @@ static int reset(StepperContext* stepper_ctx){
 	param.OcdTh = ocdth6000mA;
 	param.TimeOnMin = 0x29;
 	param.TimeOffMin = 0x29;
-	param.TorqueVal = 0x11;
+	param.TorqueVal = 0x26;
 	param.TFast = 0x19;
 
 	int result = 0;
@@ -182,7 +182,7 @@ static int reference(StepperContext* stepper_ctx, int argc, char** argv) {
 	if (!is_skip) {
 		const uint32_t start_time = HAL_GetTick();
 		result |= L6474_SetPowerOutputs(stepper_ctx->h, 1);
-		set_speed(stepper_ctx, 500);
+		set_speed(stepper_ctx, 3000);
 		if(HAL_GPIO_ReadPin(REFERENCE_MARK_GPIO_Port, REFERENCE_MARK_Pin) == GPIO_PIN_RESET) {
 			// already at reference
 			L6474_StepIncremental(stepper_ctx->h, 100000000);
@@ -212,6 +212,7 @@ static int reference(StepperContext* stepper_ctx, int argc, char** argv) {
 	}
 
 	result |= L6474_SetPowerOutputs(stepper_ctx->h, poweroutput);
+	stepper_ctx->is_powered = poweroutput;
 	return result;
 }
 
@@ -683,6 +684,7 @@ static int StepTimerCancelAsync(void* pPWM)
 	if (stepper_ctx.is_running) {
 		HAL_TIM_OnePulse_Stop_IT(stepper_ctx.htim1_handle, TIM_CHANNEL_1);
 		stepper_ctx.done_callback(stepper_ctx.h);
+		stepper_ctx.is_running = 0;
 	}
 
 	return 0;
